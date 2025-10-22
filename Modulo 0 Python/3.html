@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación: Fundamentos de Python para IA</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            background-color: #0c1421;
+            height: 100%;
+            font-family: 'Roboto', sans-serif; 
+        }
+        .main-view {
+            display: flex;
+            height: 100vh;
+        }
+        .presentation-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        #script-panel {
+            width: 450px;
+            flex-shrink: 0;
+            background-color: #080f1a;
+            color: #e5e7eb;
+            border-left: 1px solid #1f2937;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        #script-panel h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #67e8f9; /* cyan-300 */
+            font-size: 1.5rem; /* text-2xl */
+            margin-bottom: 1rem;
+        }
+        #script-panel h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: #fde047; /* amber-300 */
+            font-size: 1.125rem; /* text-lg */
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        #script-panel p {
+            line-height: 1.625;
+            color: #d1d5db; /* gray-300 */
+            margin-bottom: 1rem;
+        }
+        .slide {
+            display: none;
+            width: 1280px; 
+            min-height: 720px; 
+            position: relative;
+            color: white;
+            overflow: hidden;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            background: linear-gradient(135deg, #051937, #004d7a, #008793);
+            text-align: center;
+        }
+        .slide.active {
+            display: flex;
+        }
+
+        .title { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .subtitle { font-family: 'Montserrat', sans-serif; font-weight: 600; }
+        .content-box { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .stars {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: -1;
+            background-image: radial-gradient(white, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
+            background-size: 150px 150px; opacity: 0.08;
+            animation: stars-move 60s linear infinite;
+        }
+        @keyframes stars-move {
+            from { background-position: 0 0; }
+            to { background-position: -1500px -1500px; }
+        }
+        .footer-note {
+            position: absolute; bottom: 1rem; right: 2rem; text-align: right;
+            font-size: 0.875rem; color: #9ca3af; z-index: 10;
+        }
+        #navigation-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+        }
+        #navigation-controls button {
+            background: none; border: none; color: white; font-size: 24px; cursor: pointer; transition: color 0.2s, transform 0.2s;
+        }
+        #navigation-controls button:hover:not(:disabled) { color: #67e8f9; transform: scale(1.1); }
+        #navigation-controls button:disabled { color: #4b5563; cursor: not-allowed; }
+        #slide-counter { color: white; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; }
+
+        /* --- ANIMACIONES --- */
+        .active .fade-in-up { animation: fade-in-up-anim 0.8s ease-out forwards; opacity: 0; }
+        @keyframes fade-in-up-anim { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .active .fade-in { animation: fade-in-anim 1s ease-in forwards; opacity: 0; }
+        @keyframes fade-in-anim { from { opacity: 0; } to { opacity: 1; } }
+        
+        .active .pop-in { animation: pop-in-anim 0.6s ease-out forwards; opacity: 0; transform: scale(0.5); }
+        @keyframes pop-in-anim { to { opacity: 1; transform: scale(1); } }
+
+        .active .arrow-grow { animation: arrow-grow-anim 0.7s 1.2s ease-out forwards; transform-origin: left; transform: scaleX(0); }
+        @keyframes arrow-grow-anim { to { transform: scaleX(1); } }
+
+        #audio-player { position: fixed; bottom: 15px; left:20%; transform: translateX(-50%); width: 80%; max-width: 500px; z-index: 1000; opacity: 0.85; transition: opacity 0.3s; }
+        #audio-player:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="main-view">
+        <div class="presentation-wrapper">
+
+            <!-- Diapositiva 1: El Caos Inicial -->
+            <div class="slide active">
+                <div class="stars"></div>
+                <h1 class="title text-5xl mb-8 fade-in-up">El Desafío del Crecimiento</h1>
+                <div class="flex justify-around items-center w-full max-w-5xl">
+                    <div class="text-center w-2/5">
+                        <h3 class="subtitle text-2xl text-red-300 mb-4 fade-in-up" style="animation-delay: 0.4s;">Programas Pequeños</h3>
+                        <div class="pop-in content-box rounded-lg p-6" style="animation-delay: 0.6s;">
+                            <i class="fas fa-box-open text-7xl text-red-300"></i>
+                            <p class="mt-4">Variables y funciones sueltas. Una caja de piezas sin organizar.</p>
+                        </div>
+                    </div>
+                    <div class="text-5xl text-gray-400 fade-in" style="animation-delay: 1.0s;">
+                        <i class="fas fa-long-arrow-alt-right"></i>
+                    </div>
+                    <div class="text-center w-2/5">
+                        <h3 class="subtitle text-2xl text-red-400 mb-4 fade-in-up" style="animation-delay: 1.4s;">Proyecto Grande</h3>
+                        <div class="pop-in content-box rounded-lg p-6 bg-red-500/20" style="animation-delay: 1.6s;">
+                            <i class="fas fa-dumpster-fire text-7xl text-red-400"></i>
+                            <p class="mt-4">¡Un CAOS! Imposible de mantener o escalar.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-12 text-2xl fade-in-up" style="animation-delay: 2.0s;">Necesitamos una forma de <span class="text-cyan-300 font-bold">empaquetar la complejidad</span>.</p>
+                <div class="footer-note">1 / 12<br>El Problema de la Complejidad</div>
+            </div>
+
+            <!-- Diapositiva 2: La Solución: POO -->
+            <div class="slide">
+                <div class="stars"></div>
+                <h1 class="title text-5xl mb-6 fade-in-up">La Solución: Programación Orientada a Objetos</h1>
+                <h2 class="subtitle text-3xl text-amber-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Pensar en "Objetos"</h2>
+                <div class="flex justify-center items-center gap-8 w-full max-w-5xl">
+                    <div class="text-center pop-in" style="animation-delay: 0.6s;">
+                        <i class="fas fa-database text-7xl text-cyan-400"></i>
+                        <p class="mt-2 text-xl">Datos</p>
+                    </div>
+                    <div class="text-7xl text-amber-300 pop-in" style="animation-delay: 0.8s;">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="text-center pop-in" style="animation-delay: 1.0s;">
+                        <i class="fas fa-cogs text-7xl text-cyan-400"></i>
+                        <p class="mt-2 text-xl">Comportamientos</p>
+                    </div>
+                    <div class="text-5xl text-gray-400 arrow-grow">
+                        <i class="fas fa-long-arrow-alt-right"></i>
+                    </div>
+                    <div class="text-center pop-in" style="animation-delay: 1.8s;">
+                        <div class="content-box rounded-2xl p-8 bg-green-500/20 border-green-400">
+                            <i class="fas fa-cube text-8xl text-green-300"></i>
+                            <p class="mt-4 text-3xl subtitle">Objeto</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-12 text-2xl fade-in-up" style="animation-delay: 2.2s;">Empaquetamos datos y las funciones que operan sobre ellos en una sola entidad.</p>
+                <div class="footer-note">2 / 12<br>Introducción a POO</div>
+            </div>
+
+            <!-- Diapositiva 3: La Clase -->
+            <div class="slide">
+                <div class="stars"></div>
+                <h1 class="title text-5xl mb-8 fade-in-up">Paso 1: El Plano (La Clase)</h1>
+                <div class="flex justify-center items-center gap-12 w-full max-w-6xl">
+                    <div class="pop-in" style="animation-delay: 0.4s;">
+                        <i class="fas fa-scroll text-9xl text-amber-300"></i>
+                        <h2 class="subtitle text-3xl mt-4">class Coche:</h2>
+                    </div>
+                    <div class="text-left w-1/2 content-box rounded-xl p-8">
+                        <h3 class="subtitle text-2xl text-cyan-300 mb-4 fade-in-up" style="animation-delay: 0.8s;"><i class="fas fa-list-ul mr-2"></i> Atributos (Datos)</h3>
+                        <ul class="list-disc list-inside space-y-2 text-xl">
+                            <li class="fade-in-up" style="animation-delay: 1.0s;">color</li>
+                            <li class="fade-in-up" style="animation-delay: 1.2s;">velocidad_maxima</li>
+                            <li class="fade-in-up" style="animation-delay: 1.4s;">numero_puertas</li>
+                        </ul>
+                        <h3 class="subtitle text-2xl text-cyan-300 mt-8 mb-4 fade-in-up" style="animation-delay: 1.6s;"><i class="fas fa-running mr-2"></i> Métodos (Comportamientos)</h3>
+                        <ul class="list-disc list-inside space-y-2 text-xl font-mono">
+                            <li class="fade-in-up" style="animation-delay: 1.8s;">arrancar()</li>
+                            <li class="fade-in-up" style="animation-delay: 2.0s;">acelerar()</li>
+                            <li class="fade-in-up" style="animation-delay: 2.2s;">frenar()</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="mt-10 text-xl fade-in-up" style="animation-delay: 2.5s;">La clase no es el coche, es la <span class="font-bold text-amber-300">definición</span> de lo que es un coche.</p>
+                <div class="footer-note">3 / 12<br>Clases</div>
+            </div>
+
+            <!-- Diapositiva 4: El Objeto -->
+            <div class="slide">
+                <div class="stars"></div>
+                <h1 class="title text-5xl mb-8 fade-in-up">Paso 2: La Realidad (El Objeto)</h1>
+                <h2 class="subtitle text-2xl mb-12 fade-in-up" style="animation-delay: 0.2s;">Instancias creadas a partir del plano</h2>
+                <div class="flex justify-around items-center w-full max-w-6xl">
+                    <div class="text-center pop-in" style="animation-delay: 1.8s;">
+                        <i class="fas fa-car-side text-9xl text-red-500"></i>
+                        <code class="block mt-4 text-xl content-box rounded p-2">coche_rojo = Coche()</code>
+                        <p class="mt-2">color = "rojo"</p>
+                    </div>
+
+                    <div class="text-center">
+                        <i class="fas fa-scroll text-8xl text-amber-300 mb-4 fade-in" style="animation-delay: 0.5s;"></i>
+                        <h3 class="subtitle text-3xl fade-in" style="animation-delay: 0.7s;">Clase Coche</h3>
+                        <div class="flex flex-col gap-8 mt-8">
+                            <i class="fas fa-long-arrow-alt-down text-5xl text-gray-400 arrow-grow" style="transform: rotate(45deg);"></i>
+                            <i class="fas fa-long-arrow-alt-down text-5xl text-gray-400 arrow-grow" style="transform: rotate(-45deg);"></i>
+                        </div>
+                    </div>
+
+                    <div class="text-center pop-in" style="animation-delay: 2.0s;">
+                        <i class="fas fa-car-side text-9xl text-blue-500"></i>
+                        <code class="block mt-4 text-xl content-box rounded p-2">coche_azul = Coche()</code>
+                        <p class="mt-2">color = "azul"</p>
+                    </div>
+                </div>
+                <p class="mt-12 text-2xl fade-in-up" style="animation-delay: 2.4s;">Mismo plano, diferentes <span class="font-bold text-cyan-300">valores</span> para sus atributos.</p>
+                <div class="footer-note">4 / 12<br>Objetos</div>
+            </div>
+
+            <!-- Diapositiva 5: Pilares de la POO -->
+            <div class="slide">
+                <div class="stars"></div>
+                <h1 class="title text-5xl mb-12 fade-in-up">Los 3 Pilares Conceptuales</h1>
+                <div class="grid grid-cols-3 gap-8 w-full max-w-6xl">
+                    <div class="content-box rounded-xl p-6 fade-in-up" style="animation-delay: 0.5s;">
+                        <i class="fas fa-sitemap text-6xl text-green-300 mb-4"></i>
+                        <h3 class="title text-3xl text-green-300">Herencia</h3>
+                        <p class="mt-2 text-lg">Crear clases nuevas a partir de existentes. (CocheDeportivo hereda de Coche).</p>
+                    </div>
+                    <div class="content-box rounded-xl p-6 fade-in-up" style="animation-delay: 0.8s;">
+                        <i class="fas fa-shield-alt text-6xl text-blue-300 mb-4"></i>
+                        <h3 class="title text-3xl text-blue-300">Encapsulamiento</h3>
+                        <p class="mt-2 text-lg">Ocultar la complejidad interna. Solo exponemos métodos simples (arrancar()).</p>
+                    </div>
+                    <div class="content-box rounded-xl p-6 fade-in-up" style="animation-delay: 1.1s;">
+                        <i class="fas fa-random text-6xl text-purple-300 mb-4"></i>
+                        <h3 class="title text-3xl text-purple-300">Polimorfismo</h3>
+                        <p class="mt-2 text-lg">Objetos diferentes responden al mismo mensaje de forma distinta (Coche y Barco `moverse()`).</p>
+                    </div>
+                </div>
+                <div class="footer-note">5 / 12<br>Pilares de POO</div>
+            </div>
+            
+            <!-- Diapositiva 6: POO en IA -->
+            <div class="slide">
+                 <div class="stars"></div>
+                 <h1 class="title text-5xl mb-6 fade-in-up">¿Por Qué es Vital para la IA?</h1>
+                 <h2 class="subtitle text-2xl mb-10 fade-in-up" style="animation-delay: 0.2s;">Es el lenguaje de las grandes librerías</h2>
+                 <div class="flex justify-center items-center gap-12 w-full max-w-5xl">
+                    <div class="pop-in" style="animation-delay: 0.6s;">
+                        <i class="fab fa-python text-8xl text-yellow-300"></i>
+                        <h3 class="subtitle text-2xl mt-2">PyTorch / Keras</h3>
+                    </div>
+                    <div class="text-5xl text-gray-400 pop-in" style="animation-delay: 0.9s;">
+                        <i class="fas fa-long-arrow-alt-right"></i>
+                    </div>
+                    <div class="content-box rounded-xl p-8 text-left pop-in" style="animation-delay: 1.2s;">
+                        <pre class="text-lg"><code class="language-python">
+class MiRedNeuronal(<span class="text-cyan-300">Libreria.ClaseBase</span>):
+    <span class="text-gray-400"># Atributos: nuestras capas</span>
+    self.capa1 = ...
+    self.capa2 = ...
+
+    <span class="text-gray-400"># Método: el flujo de datos</span>
+    def forward(self, datos):
+        ...
+        return resultado
+                        </code></pre>
+                    </div>
+                 </div>
+                 <p class="mt-12 text-2xl fade-in-up" style="animation-delay: 1.6s;">Al definir una red, <span class="font-bold text-green-300">heredamos</span> de una clase base y añadimos nuestro propio diseño.</p>
+                 <div class="footer-note">6 / 12<br>POO en Inteligencia Artificial</div>
+            </div>
+
+            <!-- Diapositiva 7: El problema: Las cosas fallan -->
+            <div class="slide">
+                <div class="stars"></div>
+                <h1 class="title text-5xl mb-8 fade-in-up">Una Verdad Ineludible: Las Cosas Fallan</h1>
+                <h2 class="subtitle text-2xl mb-12 fade-in-up" style="animation-delay: 0.2s;">El mundo real no es perfecto.</h2>
+                <div class="relative w-full max-w-4xl h-20">
+                    <div class="absolute top-1/2 left-0 w-full h-2 bg-blue-400/50 rounded-full fade-in" style="animation-delay: 0.5s;"></div>
+                    <div class="absolute top-1/2 left-0 w-full flex justify-around items-center">
+                        <i class="fas fa-file-alt text-4xl text-cyan-300 pop-in" style="animation-delay: 0.8s;" title="Archivo no existe"></i>
+                        <i class="fas fa-keyboard text-4xl text-cyan-300 pop-in" style="animation-delay: 1.0s;" title="Entrada incorrecta"></i>
+                        <i class="fas fa-wifi text-4xl text-cyan-300 pop-in" style="animation-delay: 1.2s;" title="Conexión perdida"></i>
+                    </div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pop-in" style="animation-delay: 1.8s;">
+                        <i class="fas fa-bomb text-9xl text-red-500"></i>
+                        <h3 class="title text-4xl mt-4 text-red-400">¡CRASH!</h3>
+                    </div>
+                </div>
+                <p class="mt-24 text-2xl fade-in-up" style="animation-delay: 2.2s;">Un programa mal diseñado se rompe. Necesitamos construir sistemas <span class="font-bold text-amber-300">resilientes</span>.</p>
+                <div class="footer-note">7 / 12<br>Manejo de Errores: El Porqué</div>
+            </div>
+
+            <!-- Diapositiva 8: try/except/finally -->
+            <div class="slide">
+                <div class="stars"></div>
+                <h1 class="title text-5xl mb-8 fade-in-up">El Plan de Contingencia: `try / except / finally`</h1>
+                <div class="w-full max-w-5xl content-box rounded-2xl p-8">
+                    <div class="grid grid-cols-3 gap-4 text-left">
+                        <!-- TRY -->
+                        <div class="fade-in-up" style="animation-delay: 0.4s;">
+                            <h3 class="font-mono text-3xl font-bold text-cyan-300">try:</h3>
+                            <div class="border-l-4 border-cyan-300 pl-4 mt-2">
+                                <p><i class="fas fa-question-circle mr-2"></i> Poner aquí el código que <span class="font-bold">podría fallar</span>.</p>
+                                <p class="mt-2 text-gray-400">Ej: `abrir_archivo('datos.csv')`</p>
+                            </div>
+                        </div>
+                        <!-- EXCEPT -->
+                        <div class="fade-in-up" style="animation-delay: 0.8s;">
+                            <h3 class="font-mono text-3xl font-bold text-red-400">except:</h3>
+                            <div class="border-l-4 border-red-400 pl-4 mt-2">
+                                <p><i class="fas fa-exclamation-triangle mr-2"></i> Se ejecuta <span class="font-bold">solo si hay un error</span> en el `try`.</p>
+                                <p class="mt-2 text-gray-400">Ej: `print("El archivo no existe")`</p>
+                            </div>
+                        </div>
+                        <!-- FINALLY -->
+                        <div class="fade-in-up" style="animation-delay: 1.2s;">
+                            <h3 class="font-mono text-3xl font-bold text-gray-300">finally:</h3>
+                            <div class="border-l-4 border-gray-300 pl-4 mt-2">
+                                <p><i class="fas fa-check-double mr-2"></i> Se ejecuta <span class="font-bold">siempre</span>, con o sin error.</p>
+                                <p class="mt-2 text-gray-400">Ej: `cerrar_recursos()`</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-10 text-2xl fade-in-up" style="animation-delay: 1.6s;">La diferencia entre un prototipo frágil y un sistema de producción <span class="font-bold text-green-300">robusto</span>.</p>
+                <div class="footer-note">8 / 12<br>Manejo de Excepciones</div>
+            </div>
+
+            <!-- Diapositiva 9: List Comprehensions Intro -->
+            <div class="slide">
+                <div class="stars"></div>
+                <h1 class="title text-5xl mb-6 fade-in-up">Elegancia y Eficiencia en Python</h1>
+                <h2 class="subtitle text-3xl text-cyan-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Comprensión de Listas</h2>
+                <div class="flex justify-around items-center w-full max-w-6xl">
+                    <div class="w-2/5 content-box rounded-xl p-6 fade-in-up" style="animation-delay: 0.6s;">
+                        <h3 class="subtitle text-2xl text-amber-300 mb-4">Forma Tradicional (Bucle `for`)</h3>
+                        <pre class="text-left text-lg"><code>
+cuadrados = []
+for n in lista:
+    cuadrados.append(n * n)
+                        </code></pre>
+                        <p class="mt-4 text-red-300"><i class="fas fa-align-left"></i> 3-4 líneas, más verboso.</p>
+                    </div>
+                    <div class="pop-in" style="animation-delay: 1.0s;">
+                        <i class="fas fa-magic text-8xl text-purple-400"></i>
+                    </div>
+                    <div class="w-2/5 content-box rounded-xl p-6 fade-in-up" style="animation-delay: 1.4s;">
+                        <h3 class="subtitle text-2xl text-green-300 mb-4">Forma "Pythónica"</h3>
+                        <pre class="text-left text-lg"><code>
+cuadrados = [n * n for n in lista]
+                        </code></pre>
+                        <p class="mt-4 text-green-300"><i class="fas fa-compress-arrows-alt"></i> 1 línea, conciso, más rápido.</p>
+                    </div>
+                </div>
+                <div class="footer-note">9 / 12<br>Comprensión de Listas</div>
+            </div>
+
+            <!-- Diapositiva 10: List Comprehensions Ejemplo -->
+            <div class="slide">
+                <div class="stars"></div>
+                <h1 class="title text-5xl mb-12 fade-in-up">El Poder en una Sola Línea</h1>
+                <div class="flex justify-around items-center w-full max-w-5xl text-2xl">
+                    <div class="pop-in" style="animation-delay: 0.5s;">
+                        <p class="subtitle text-xl mb-2 text-gray-300">Lista Original</p>
+                        <code class="content-box rounded-lg p-4">[1, 2, 3, 4]</code>
+                    </div>
+                    <div class="pop-in" style="animation-delay: 1.0s;">
+                        <i class="fas fa-long-arrow-alt-right text-6xl text-gray-400"></i>
+                    </div>
+                    <div class="pop-in" style="animation-delay: 1.5s;">
+                        <p class="subtitle text-xl mb-2 text-cyan-300">Comprensión de Lista</p>
+                        <code class="content-box rounded-lg p-4">[n * n for n in lista]</code>
+                    </div>
+                     <div class="pop-in" style="animation-delay: 2.0s;">
+                        <i class="fas fa-long-arrow-alt-right text-6xl text-gray-400"></i>
+                    </div>
+                    <div class="pop-in" style="animation-delay: 2.5s;">
+                        <p class="subtitle text-xl mb-2 text-green-300">Nueva Lista</p>
+                        <code class="content-box rounded-lg p-4">[1, 4, 9, 16]</code>
+                    </div>
+                </div>
+                <p class="mt-16 text-2xl max-w-4xl mx-auto fade-in-up" style="animation-delay: 3.0s;">Se lee casi como en inglés: "Dame <span class="text-green-300">el cuadrado de n</span> <span class="text-cyan-300">para cada n en la lista</span>".</p>
+                <div class="footer-note">10 / 12<br>Ejemplo de Comprensión</div>
+            </div>
+
+            <!-- Diapositiva 11: Manejo de Archivos -->
+            <div class="slide">
+                <div class="stars"></div>
+                <h1 class="title text-5xl mb-6 fade-in-up">Comunicación con el Mundo Exterior</h1>
+                <h2 class="subtitle text-3xl text-amber-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Manejo de Archivos</h2>
+                <div class="flex justify-center items-center gap-10 w-full max-w-5xl">
+                    <i class="fas fa-desktop text-9xl pop-in" style="animation-delay: 0.6s;"></i>
+                    <i class="fas fa-exchange-alt text-7xl text-gray-400 pop-in" style="animation-delay: 0.9s;"></i>
+                    <i class="fas fa-file-csv text-9xl pop-in" style="animation-delay: 1.2s;"></i>
+                </div>
+                 <div class="mt-12 content-box rounded-xl p-8 w-full max-w-4xl fade-in-up relative" style="animation-delay: 1.6s;">
+                    <i class="fas fa-shield-alt text-6xl text-green-400 absolute -top-8 -right-4 pop-in" style="animation-delay: 2.2s;"></i>
+                    <h3 class="subtitle text-2xl text-green-300 mb-4">La Forma Segura: `with open(...)`</h3>
+                    <pre class="text-left text-xl"><code>
+with open('mi_archivo.txt', 'r') as f:
+    for linea in f:
+        print(linea)
+                    </code></pre>
+                    <p class="mt-4 text-lg">La estructura `with` garantiza que el archivo <span class="font-bold">se cierra automáticamente</span>, incluso si ocurren errores.</p>
+                </div>
+                <div class="footer-note">11 / 12<br>Manejo de Archivos</div>
+            </div>
+
+            <!-- Diapositiva 12: Conclusión y CTA -->
+            <div class="slide">
+                <div class="stars"></div>
+                <h1 class="title text-5xl mb-8 fade-in-up">Hemos Construido un Fundamento Sólido</h1>
+                <h2 class="subtitle text-2xl mb-12 fade-in-up" style="animation-delay: 0.2s;">De componentes básicos a patrones de construcción.</h2>
+                <div class="grid grid-cols-4 gap-6 w-full max-w-6xl">
+                    <div class="content-box rounded-lg p-6 pop-in" style="animation-delay: 0.6s;">
+                        <i class="fas fa-cubes text-5xl text-cyan-300 mb-3"></i><h3 class="subtitle text-xl">POO</h3><p>Organizar</p>
+                    </div>
+                    <div class="content-box rounded-lg p-6 pop-in" style="animation-delay: 0.8s;">
+                        <i class="fas fa-shield-alt text-5xl text-green-300 mb-3"></i><h3 class="subtitle text-xl">Excepciones</h3><p>Robustecer</p>
+                    </div>
+                    <div class="content-box rounded-lg p-6 pop-in" style="animation-delay: 1.0s;">
+                        <i class="fas fa-magic text-5xl text-purple-300 mb-3"></i><h3 class="subtitle text-xl">List Comp.</h3><p>Eficiencia</p>
+                    </div>
+                    <div class="content-box rounded-lg p-6 pop-in" style="animation-delay: 1.2s;">
+                        <i class="fas fa-save text-5xl text-amber-300 mb-3"></i><h3 class="subtitle text-xl">Archivos</h3><p>Comunicar</p>
+                    </div>
+                </div>
+                <p class="mt-12 text-2xl fade-in-up" style="animation-delay: 1.6s;">No solo aprendemos a programar, aprendemos a <span class="font-bold text-cyan-300">pensar en sistemas</span>.</p>
+                <div class="mt-10 flex gap-8 items-center fade-in" style="animation-delay: 2.0s;">
+                    <button class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg text-2xl flex items-center gap-3"><i class="fas fa-thumbs-up"></i> Me Gusta</button>
+                    <button class="bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-lg text-2xl flex items-center gap-3"><i class="fas fa-bell"></i> Suscríbete</button>
+                </div>
+                <div class="footer-note">12 / 12<br>Conclusión y Próximos Pasos</div>
+            </div>
+
+
+        </div>
+
+        <div id="script-panel">
+            <!-- El guion se cargará aquí -->
+        </div>
+    </div>
+
+    <!-- ===== CONTROLES DE NAVEGACIÓN Y AUDIO ===== -->
+    <div id="navigation-controls">
+        <button id="prev-btn" title="Anterior"><i class="fas fa-arrow-left"></i></button>
+        <span id="slide-counter">1 / 12</span>
+        <button id="next-btn" title="Siguiente"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    <audio id="audio-player" controls>
+        <source src="3.wav" type="audio/wav">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const counterElement = document.getElementById('slide-counter');
+            const scriptPanel = document.getElementById('script-panel');
+            let currentSlide = 0;
+
+            const scriptsBySlide = [
+                {
+                    "title": "DIAPOSITIVA 1: El Caos Inicial",
+                    "script": "Ahora, hablaremos de la Programación Orientada a Objetos, o POO. Al principio, cuando nuestros programas son pequeños, podemos trabajar con variables y funciones sueltas. Pero a medida que un proyecto crece, esto se vuelve un caos. Es como intentar construir un coche teniendo un montón de tornillos, pistones y cables en una caja gigante. No hay organización. La Programación Orientada a Objetos nos da una forma de empaquetar la complejidad."
+                },
+                {
+                    "title": "DIAPOSITIVA 2: La Solución - POO",
+                    "script": "La idea central es dejar de pensar en datos y en funciones por separado, y empezar a pensar en 'objetos' que tienen tanto datos como comportamientos."
+                },
+                {
+                    "title": "DIAPOSITIVA 3: La Clase como Plano",
+                    "script": "Para lograrlo, primero creamos una 'clase', que no es más que un plano. Imaginen el plano de un coche. El plano no es el coche en sí, pero define todas sus características y lo que puede hacer. Define que tendrá un color, una velocidad máxima, un número de puertas... a esto lo llamamos 'atributos'. Y también define qué puede hacer: puede `arrancar()`, `acelerar()`, `frenar()`... a esto lo llamamos 'métodos'."
+                },
+                {
+                    "title": "DIAPOSITIVA 4: El Objeto como Instancia",
+                    "script": "Una vez que tenemos el plano, la clase, podemos crear 'objetos', que son las instancias reales construidas a partir de ese plano. Podemos crear un `coche_rojo` y un `coche_azul`. Ambos son objetos de la clase Coche, pero cada uno tendrá sus propios valores para los atributos (su propio color, su propia velocidad actual). Y ambos podrán ejecutar los mismos métodos."
+                },
+                {
+                    "title": "DIAPOSITIVA 5: Los 3 Pilares de POO",
+                    "script": "Este paradigma se sostiene sobre tres pilares conceptuales. No necesitamos dominarlos ahora, solo conocer sus nombres y su propósito. El primero es la Herencia, que nos permite crear una clase nueva basándonos en una existente. Por ejemplo, podríamos crear una clase 'CocheDeportivo' que hereda todo de la clase 'Coche', pero añade un nuevo método `activar_turbo()`. Reutilizamos el diseño y solo añadimos lo nuevo. El segundo es el Encapsulamiento, la idea de que los detalles internos de un objeto deben estar ocultos. Yo no necesito saber cómo funciona el motor para poder arrancar el coche; solo necesito el método `arrancar()`. Esto protege la complejidad y hace que nuestros sistemas sean más modulares. El tercero es el Polimorfismo, que suena complicado pero simplemente significa que diferentes objetos pueden responder al mismo mensaje de formas distintas. Si le digo `moverse()` a un objeto Coche, se moverá sobre ruedas. Si se lo digo a un objeto Barco, navegará."
+                },
+                {
+                    "title": "DIAPOSITIVA 6: POO en Inteligencia Artificial",
+                    "script": "¿Y por qué es esto absolutamente vital para la inteligencia artificial? Porque las grandes librerías que usaremos, como PyTorch de Meta o Keras que se integra con TensorFlow de Google, están construidas íntegramente sobre este paradigma. Cuando definimos una red neuronal, lo que estamos haciendo, en realidad, es crear una clase que hereda de una clase base proporcionada por la librería. Añadimos nuestras capas como atributos y definimos el flujo de los datos en un método. Entender la POO es entender el lenguaje en el que se diseñan las herramientas más potentes de la IA."
+                },
+                {
+                    "title": "DIAPOSITIVA 7: La Necesidad de Manejar Errores",
+                    "script": "En segundo lugar, si vamos a construir sistemas complejos, tenemos que aceptar una verdad ineludible: las cosas fallan. Los datos del mundo real no son perfectos. Un archivo puede no existir, un usuario puede introducir un texto donde se esperaba un número, una conexión de red puede caerse. Un programa mal diseñado, ante una de estas situaciones, simplemente se 'rompe'. Se detiene y muestra un error. Esto es inaceptable para cualquier aplicación seria. Necesitamos construir sistemas resilientes."
+                },
+                {
+                    "title": "DIAPOSITIVA 8: `try / except / finally`",
+                    "script": "Para esto, Python nos ofrece el manejo de errores y excepciones. La estructura es muy intuitiva y se basa en tres palabras clave: `try`, `except` y `finally`. En el bloque `try`, ponemos el código que es potencialmente peligroso, el que podría fallar. Le estamos diciendo a Python: 'Intenta hacer esto, pero estate preparado por si algo va mal'. Si todo sale bien, el programa continúa. Pero si ocurre un error, en lugar de romperse, el programa salta inmediatamente al bloque `except`. Este bloque es nuestro plan de contingencia. Aquí podemos registrar el error, mostrar un mensaje amigable al usuario, o establecer un valor por defecto para continuar la ejecución. Finalmente, el bloque `finally` es opcional, y contiene código que se ejecutará siempre, sin importar si el bloque `try` tuvo éxito o si saltó a un `except`. Es perfecto para tareas de limpieza, como cerrar un archivo que habíamos abierto. Usar `try` y `except` es la diferencia entre un prototipo frágil y un sistema de producción robusto."
+                },
+                {
+                    "title": "DIAPOSITIVA 9: Introducción a Comprensión de Listas",
+                    "script": "En tercer lugar, hablemos de elegancia y eficiencia. Python tiene una reputación de ser un lenguaje muy legible y expresivo. Una de las características que mejor encarna esta filosofía es la comprensión de listas, o *list comprehensions*. Es una forma concisa y muy 'Pythónica' de crear listas a partir de otras secuencias."
+                },
+                {
+                    "title": "DIAPOSITIVA 10: Ejemplo de Comprensión de Listas",
+                    "script": "Imagina que tienes una lista de números y quieres crear una nueva lista con el cuadrado de cada uno de esos números. La forma tradicional sería crear una lista vacía, luego usar un bucle `for` para recorrer la lista original y, en cada paso, calcular el cuadrado y añadirlo a la nueva lista con `append`. Funciona, pero son tres o cuatro líneas de código para una idea muy simple. Una comprensión de lista nos permite expresar esa misma idea en una sola línea, de una forma que casi se lee como en inglés: `[numero * numero for numero in lista_original]`. 'Dame el cuadrado de cada número para cada número en la lista original'. No solo es más corto y más legible una vez que te acostumbras, sino que también es más rápido y eficiente. De nuevo, no es crucial que seas un maestro escribiéndolas de memoria. Lo importante es que las reconozcas cuando las veas y, sobre todo, que sepas cuándo pedírselas a tu asistente de IA. 'Refactoriza este bucle para crear una lista usando una comprensión de listas'. Eso es pensar como un arquitecto."
+                },
+                {
+                    "title": "DIAPOSITIVA 11: Manejo de Archivos",
+                    "script": "Finalmente, nuestros programas no viven en una burbuja. Necesitan persistir datos, leer configuraciones, procesar resultados de otros sistemas y generar informes. Necesitan interactuar con el sistema de archivos. El manejo de archivos en Python es increíblemente sencillo, especialmente cuando se trata de archivos de texto plano, como los `.txt` o, de vital importancia para la ciencia de datos, los `.csv`. La forma moderna y segura de trabajar con archivos en Python es usando la sentencia `with open(...)`. Esta sintaxis es magnífica porque se encarga automáticamente de la gestión de recursos. Cuando abres un archivo, es crucial que te acuerdes de cerrarlo cuando termines. La estructura `with` garantiza que, tan pronto como el bloque de código que está dentro termina, ya sea porque se completó o porque ocurrió un error, el archivo se cerrará de forma segura y automática."
+                },
+                {
+                    "title": "DIAPOSITIVA 12: Conclusión y Próximos Pasos",
+                    "script": "Y ahí lo tenéis. Hemos pasado de los componentes básicos a los patrones de construcción. La Programación Orientada a Objetos para organizar la complejidad. El manejo de excepciones para construir sistemas robustos. La comprensión de listas para escribir código elegante y eficiente. Y el manejo de archivos para que nuestros programas puedan comunicarse con el mundo exterior. Estos no son solo 'trucos' de Python. Son conceptos fundamentales de la ingeniería de software. Y dominarlos a nivel conceptual es lo que nos permitirá dirigir a las herramientas de IA con precisión y visión. Si esta forma de abordar la ingeniería de software resuena contigo, dale a 'me gusta' y suscríbete. Porque en nuestro próximo vídeo, vamos a dar el siguiente gran salto. Dejaremos atrás el Python 'puro' y nos adentraremos en el ecosistema de librerías que lo convierten en la superpotencia de la inteligencia artificial."
+                }
+            ];
+
+
+            function showSlide(index) {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = index;
+                slides[currentSlide].classList.add('active');
+                counterElement.textContent = `${currentSlide + 1} / ${slides.length}`;
+                prevBtn.disabled = (currentSlide === 0);
+                nextBtn.disabled = (currentSlide === slides.length - 1);
+                
+                if (scriptPanel && scriptsBySlide[index]) {
+                    const { title, script } = scriptsBySlide[index];
+                    const scriptParagraphs = script.split('\n').map(p => p.trim()).filter(Boolean);
+                    
+                    let htmlContent = `<h2>${title}</h2>`;
+                    htmlContent += `<h3>Guion</h3>`;
+                    scriptParagraphs.forEach(p => {
+                        htmlContent += `<p>${p}</p>`;
+                    });
+
+                    scriptPanel.innerHTML = htmlContent;
+                }
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' && !nextBtn.disabled) {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
+                    prevBtn.click();
+                }
+            });
+
+            showSlide(0);
+        });
+    </script>
+</body>
+</html>

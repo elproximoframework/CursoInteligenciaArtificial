@@ -1,0 +1,23 @@
+**Índice General del Máster en Inteligencia Artificial y Ciencia de Datos**
+#### **Módulo 0: Fundamentos y Contexto de la Inteligencia Artificial**
+*   **0.1. Introducción a la Inteligencia Artificial**
+    *   Definiciones y conceptos básicos: ¿Qué es la IA?
+Diferencias entre Machine Learning, Deep learning, inteligencia artificial y redes neuronales.
+    *   Historia y evolución: De los orígenes a la era actual.
+    *   Presente y futuro de la IA: Hitos, tendencias y predicciones.
+    *   Tipos de IA: IA Débil vs. Fuerte, Simbólica vs. Conexionismo.
+*   **0.2. Fundamentos Matemáticos para la IA**
+    *   Álgebra Lineal: Vectores, matrices y operaciones clave.
+    *   Probabilidad y Estadística: Conceptos para la incertidumbre y los datos.
+    *   Cálculo: Gradientes y optimización (base del entrenamiento).
+*   **0.3. Herramientas de Programación Esenciales**
+    *   **Python para IA:**
+        *   Sintaxis básica y estructuras de control.
+        *   Funciones, módulos y programación orientada a objetos.
+        *   Manipulación de datos con librerías clave: NumPy y Pandas.
+        Uso de bibliotecas como TensorFlow, PyTorch, keras y Scikit-Learn
+*   **0.3. Ética, Responsabilidad e Impacto Social**
+    *   Marco ético de la IA: Principios y dilemas.
+    *   Sesgos en datos y modelos: Detección y mitigación.
+    *   Impacto de la IA en la sociedad, el empleo y la economía.
+    *   Liderando el uso responsable de la IA.

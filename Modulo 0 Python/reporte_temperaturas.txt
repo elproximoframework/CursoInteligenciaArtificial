@@ -1,0 +1,14 @@
+REPORTE DEL SISTEMA: Planta Industrial
+==================================================
+
+Total de lecturas: 6
+Temperatura promedio: 26.23°C
+Umbral crítico: 28.0°C
+Sensores con alerta: 2
+
+LECTURAS CRÍTICAS:
+--------------------------------------------------
+  Sensor S003 en Zona de Producción: 31.2°C ⚠️
+  Sensor S005 en Calderas: 29.5°C ⚠️
+
+==================================================

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación: La Era de la IA</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            background-color: #0c1421;
+            height: 100%;
+        }
+        .main-view {
+            display: flex;
+            height: 100vh;
+        }
+        .presentation-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        #script-panel {
+            width: 450px;
+            flex-shrink: 0;
+            background-color: #080f1a;
+            color: #e5e7eb;
+            border-left: 1px solid #1f2937;
+            overflow-y: auto;
+            padding: 2rem;
+            font-family: 'Roboto', sans-serif;
+        }
+        #script-panel h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #67e8f9; /* cyan-300 */
+            font-size: 1.5rem; /* text-2xl */
+            margin-bottom: 1rem;
+        }
+        #script-panel h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: #fde047; /* amber-300 */
+            font-size: 1.125rem; /* text-lg */
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        #script-panel p {
+            line-height: 1.625;
+            color: #d1d5db; /* gray-300 */
+            margin-bottom: 1rem;
+        }
+        .presentation-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+        }
+        .slide {
+            display: none;
+            width: 1280px; 
+            min-height: 720px; 
+            position: relative;
+            font-family: 'Roboto', sans-serif; 
+            color: white;
+            overflow: hidden;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            background: linear-gradient(135deg, #051937, #004d7a, #008793);
+        }
+        .slide.active {
+            display: flex;
+        }
+
+        .title { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .subtitle { font-family: 'Montserrat', sans-serif; font-weight: 600; }
+        .content-box { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .stars {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: -1;
+            background-image: radial-gradient(white, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
+            background-size: 150px 150px; opacity: 0.08;
+            animation: stars-move 60s linear infinite;
+        }
+        @keyframes stars-move {
+            from { background-position: 0 0; }
+            to { background-position: -1500px -1500px; }
+        }
+        .footer-note {
+            position: absolute; bottom: 1rem; right: 2rem; text-align: right;
+            font-size: 0.875rem; color: #9ca3af; z-index: 10;
+        }
+        #navigation-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+        }
+        #navigation-controls button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+        }
+        #navigation-controls button:hover:not(:disabled) { color: #67e8f9; transform: scale(1.1); }
+        #navigation-controls button:disabled { color: #4b5563; cursor: not-allowed; }
+        #slide-counter { color: white; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; }
+
+        /* --- ANIMACIONES GENERALES --- */
+        .active .fade-in-up { animation: fade-in-up-anim 0.8s ease-out forwards; opacity: 0; }
+        @keyframes fade-in-up-anim { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .active .fade-in { animation: fade-in-anim 1s ease-in forwards; opacity: 0; }
+        @keyframes fade-in-anim { from { opacity: 0; } to { opacity: 1; } }
+        .active .pop-in { animation: pop-in-anim 0.6s ease-out forwards; opacity: 0; transform: scale(0.5); }
+        @keyframes pop-in-anim { to { opacity: 1; transform: scale(1); } }
+        .active .list-item-anim { animation: fade-in-up-anim 0.6s ease-out forwards; opacity: 0; }
+        
+        #audio-player { position: fixed; bottom: 15px; left:20%; transform: translateX(-50%); width: 80%; max-width: 500px; z-index: 1000; opacity: 0.85; transition: opacity 0.3s; }
+        #audio-player:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="main-view">
+        <div class="presentation-wrapper">
+
+            <!-- ===== DIAPOSITIVA 1: La Aceleración Vertiginosa ===== -->
+            <div class="slide active">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">La Aceleración Vertiginosa</h1>
+                    <div class="grid grid-cols-3 gap-8 text-center items-start">
+                        <div class="fade-in-up" style="animation-delay: 0.5s;">
+                            <i class="fas fa-robot text-8xl text-cyan-300"></i>
+                            <h3 class="subtitle text-2xl mt-4">2011: Watson</h3>
+                            <p class="mt-2 text-lg">Gana en "Jeopardy!", demostrando comprensión del lenguaje natural complejo.</p>
+                        </div>
+                        <div class="fade-in-up" style="animation-delay: 0.8s;">
+                            <i class="fas fa-mobile-alt text-8xl text-amber-300"></i>
+                            <h3 class="subtitle text-2xl mt-4">2011: Siri</h3>
+                            <p class="mt-2 text-lg">Pone un asistente de IA en el bolsillo de millones de personas.</p>
+                        </div>
+                        <div class="fade-in-up" style="animation-delay: 1.1s;">
+                            <i class="fas fa-brain text-8xl text-green-300"></i>
+                            <h3 class="subtitle text-2xl mt-4">2012-Hoy: Deep Learning</h3>
+                            <p class="mt-2 text-lg">Revoluciona el reconocimiento de imágenes, voz y lenguaje.</p>
+                        </div>
+                    </div>
+                    <div class="fade-in mt-16 text-2xl content-box rounded-lg p-6" style="animation-delay: 1.5s;">
+                       <p>De máquinas expertas a asistentes personales y redes neuronales profundas, la evolución ha sido exponencial.</p>
+                    </div>
+                </div>
+                <div class="footer-note">1 / 10<br>Historia Reciente</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 2: La Gran Pregunta ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <div class="fade-in-up">
+                        <h2 class="subtitle text-4xl text-cyan-300">La Gran Pregunta</h2>
+                        <h1 class="title text-6xl mt-2">¿De qué tipos de IA hablamos?</h1>
+                    </div>
+                    <i class="fas fa-question-circle text-8xl text-amber-300 my-12 pop-in" style="animation-delay: 0.8s;"></i>
+                    <div class="grid grid-cols-2 gap-8 w-full max-w-5xl mx-auto">
+                        <div class="content-box rounded-xl p-6 fade-in" style="animation-delay: 1.2s;">
+                            <h3 class="subtitle text-2xl mb-2 text-green-300"><i class="fas fa-tasks mr-2"></i> Por Capacidad</h3>
+                            <p class="text-lg">Distingue entre sistemas especializados y sistemas con inteligencia general similar a la humana.</p>
+                        </div>
+                        <div class="content-box rounded-xl p-6 fade-in" style="animation-delay: 1.5s;">
+                            <h3 class="subtitle text-2xl mb-2 text-yellow-300"><i class="fas fa-lightbulb mr-2"></i> Por Enfoque</h3>
+                            <p class="text-lg">Diferencia entre la IA basada en reglas lógicas y la que aprende a partir de datos, inspirada en el cerebro.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-note">2 / 10<br>Clasificación de la IA</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 3: IA Débil / Estrecha ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                 <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Clasificación 1: IA Débil (Estrecha)</h1>
+                    <h2 class="subtitle text-3xl text-cyan-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">El Genio Especialista</h2>
+                    <div class="grid grid-cols-3 gap-8 items-center">
+                        <div class="pop-in text-center" style="animation-delay: 0.5s;">
+                            <i class="fas fa-microphone-alt text-8xl text-blue-300"></i>
+                            <p class="mt-4 text-xl font-bold">Asistentes de Voz</p>
+                        </div>
+                        <div class="pop-in text-center" style="animation-delay: 0.8s;">
+                            <i class="fas fa-film text-8xl text-red-400"></i>
+                            <p class="mt-4 text-xl font-bold">Sistemas de Recomendación</p>
+                        </div>
+                        <div class="pop-in text-center" style="animation-delay: 1.1s;">
+                            <i class="fas fa-car text-8xl text-gray-300"></i>
+                            <p class="mt-4 text-xl font-bold">Conducción Autónoma</p>
+                        </div>
+                    </div>
+                    <div class="fade-in mt-12 text-2xl max-w-5xl mx-auto content-box rounded-lg p-6" style="animation-delay: 1.5s;">
+                        <p><i class="fas fa-bullseye text-green-400 mr-2"></i> Diseñada para <span class="font-bold text-green-300">una tarea específica</span>. Carece de conciencia o inteligencia general. Es prácticamente toda la IA que existe hoy.</p>
+                    </div>
+                </div>
+                <div class="footer-note">3 / 10<br>IA Débil</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 4: IA Fuerte / General ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Clasificación 1: IA Fuerte (General)</h1>
+                    <h2 class="subtitle text-3xl text-amber-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">El Santo Grial de la Investigación</h2>
+                     <div class="flex justify-center items-center gap-12">
+                        <div class="pop-in" style="animation-delay: 0.6s;">
+                             <i class="fas fa-brain text-9xl text-amber-300" style="filter: drop-shadow(0 0 15px #fde047);"></i>
+                             <h3 class="subtitle text-2xl mt-4">Inteligencia a Nivel Humano</h3>
+                        </div>
+                        <i class="fas fa-equals text-6xl text-gray-400 pop-in" style="animation-delay: 0.9s;"></i>
+                         <div class="pop-in" style="animation-delay: 1.2s;">
+                            <i class="fas fa-infinity text-9xl text-cyan-300" style="filter: drop-shadow(0 0 15px #67e8f9);"></i>
+                            <h3 class="subtitle text-2xl mt-4">Resolver Cualquier Problema</h3>
+                        </div>
+                    </div>
+                     <div class="fade-in mt-12 text-2xl max-w-5xl mx-auto content-box rounded-lg p-6 grid grid-cols-2 gap-6" style="animation-delay: 1.6s;">
+                        <p class="text-left"><i class="fas fa-check-circle text-green-400 mr-2"></i> Capaz de razonar, planificar y tener conciencia.</p>
+                        <p class="text-left"><i class="fas fa-check-circle text-green-400 mr-2"></i> Puede generalizar el aprendizaje entre dominios.</p>
+                        <p class="text-left col-span-2 text-center text-red-400"><i class="fas fa-times-circle mr-2"></i> A día de hoy, sigue siendo <span class="font-bold">hipotética y pertenece a la ciencia ficción.</span></p>
+                    </div>
+                </div>
+                <div class="footer-note">4 / 10<br>IA Fuerte</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 5: IA Simbólica ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Clasificación 2: IA Simbólica</h1>
+                    <h2 class="subtitle text-3xl text-yellow-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">El Libro de Reglas Gigante</h2>
+                    <div class="flex items-center justify-center gap-8">
+                        <div class="pop-in" style="animation-delay: 0.6s;">
+                           <i class="fas fa-book-open text-9xl text-yellow-300"></i>
+                           <h3 class="subtitle mt-4 text-2xl">Reglas Lógicas</h3>
+                        </div>
+                        <i class="fas fa-arrow-right text-6xl text-gray-400 pop-in" style="animation-delay: 0.9s;"></i>
+                        <div class="pop-in" style="animation-delay: 1.2s;">
+                           <i class="fas fa-sitemap text-9xl text-cyan-300"></i>
+                           <h3 class="subtitle mt-4 text-2xl">Razonamiento</h3>
+                        </div>
+                    </div>
+                     <div class="mt-12 grid grid-cols-2 gap-8 w-full max-w-4xl mx-auto">
+                        <div class="content-box rounded-xl p-6 fade-in" style="animation-delay: 1.6s;">
+                            <h3 class="subtitle text-2xl text-green-300 mb-2"><i class="fas fa-plus-circle mr-2"></i> Ventaja</h3>
+                            <p class="text-lg">Es transparente. Podemos ver exactamente por qué tomó una decisión.</p>
+                        </div>
+                        <div class="content-box rounded-xl p-6 fade-in" style="animation-delay: 1.9s;">
+                            <h3 class="subtitle text-2xl text-red-400 mb-2"><i class="fas fa-minus-circle mr-2"></i> Desventaja</h3>
+                            <p class="text-lg">Es muy rígida. No puede manejar la incertidumbre o situaciones nuevas.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-note">5 / 10<br>Enfoque Simbólico</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 6: Conexionismo ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Clasificación 2: Conexionismo</h1>
+                    <h2 class="subtitle text-3xl text-cyan-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Aprender de los Ejemplos</h2>
+                    <div class="flex items-center justify-center gap-8">
+                        <div class="pop-in" style="animation-delay: 0.6s;">
+                           <i class="fas fa-database text-9xl text-yellow-300"></i>
+                           <h3 class="subtitle mt-4 text-2xl">Miles de Ejemplos</h3>
+                        </div>
+                        <i class="fas fa-arrow-right text-6xl text-gray-400 pop-in" style="animation-delay: 0.9s;"></i>
+                        <div class="pop-in" style="animation-delay: 1.2s;">
+                           <i class="fas fa-project-diagram text-9xl text-cyan-300"></i>
+                           <h3 class="subtitle mt-4 text-2xl">Red Neuronal Aprende Patrones</h3>
+                        </div>
+                    </div>
+                     <div class="mt-12 grid grid-cols-2 gap-8 w-full max-w-4xl mx-auto">
+                        <div class="content-box rounded-xl p-6 fade-in" style="animation-delay: 1.6s;">
+                            <h3 class="subtitle text-2xl text-green-300 mb-2"><i class="fas fa-plus-circle mr-2"></i> Ventaja</h3>
+                            <p class="text-lg">Flexible y potente para resolver problemas complejos.</p>
+                        </div>
+                        <div class="content-box rounded-xl p-6 fade-in" style="animation-delay: 1.9s;">
+                            <h3 class="subtitle text-2xl text-red-400 mb-2"><i class="fas fa-minus-circle mr-2"></i> Desventaja</h3>
+                            <p class="text-lg">A menudo es una "caja negra", difícil de interpretar.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-note">6 / 10<br>Enfoque Conexionista</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 7: La Analogía del Chef de IA ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">La Analogía del Chef de IA</h1>
+                    <div class="grid grid-cols-2 gap-12">
+                        <!-- Columna Simbólica -->
+                        <div class="content-box rounded-xl p-8 fade-in-up" style="animation-delay: 0.4s;">
+                            <i class="fas fa-book-open text-6xl mb-4 text-yellow-300"></i>
+                            <h3 class="title text-3xl mb-4">Chef Simbólico</h3>
+                            <p class="text-lg">Sigue recetas gigantes al pie de la letra. Cocina platos perfectos pero no puede improvisar ni crear nada nuevo.</p>
+                        </div>
+                        <!-- Columna Conexionista -->
+                        <div class="content-box rounded-xl p-8 fade-in-up" style="animation-delay: 0.8s;">
+                             <i class="fas fa-lightbulb text-6xl mb-4 text-cyan-300"></i>
+                            <h3 class="title text-3xl mb-4">Chef Conexionista</h3>
+                            <p class="text-lg">Aprende probando miles de platos. Desarrolla una "intuición" culinaria, puede crear e improvisar.</p>
+                        </div>
+                    </div>
+                    <div class="fade-in mt-12 text-2xl max-w-5xl mx-auto content-box rounded-lg p-6" style="animation-delay: 1.4s;">
+                        <p><i class="fas fa-handshake text-green-400 mr-2"></i> El futuro: <span class="font-bold text-green-300">Sistemas Híbridos</span> que combinan la transparencia de las reglas con la flexibilidad del aprendizaje.</p>
+                    </div>
+                </div>
+                <div class="footer-note">7 / 10<br>Analogía Explicativa</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 8: La Revolución Generativa ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">El Presente: La Revolución Generativa</h1>
+                    <h2 class="subtitle text-3xl text-cyan-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">IA que no solo analiza, sino que <span class="text-amber-300">CREA</span></h2>
+                    <div class="grid grid-cols-3 gap-8 items-center text-center">
+                        <div class="pop-in" style="animation-delay: 0.6s;">
+                            <i class="fas fa-pen-fancy text-8xl text-cyan-300"></i>
+                            <h3 class="subtitle mt-4 text-2xl">Texto</h3>
+                            <p class="mt-2 text-lg">(ChatGPT)</p>
+                        </div>
+                        <div class="pop-in" style="animation-delay: 0.9s;">
+                            <i class="fas fa-palette text-8xl text-green-300"></i>
+                            <h3 class="subtitle mt-4 text-2xl">Imágenes</h3>
+                            <p class="mt-2 text-lg">(DALL-E, Gemini)</p>
+                        </div>
+                         <div class="pop-in" style="animation-delay: 1.2s;">
+                            <i class="fas fa-code text-8xl text-yellow-300"></i>
+                            <h3 class="subtitle mt-4 text-2xl">Código</h3>
+                            <p class="mt-2 text-lg">(Copilot)</p>
+                        </div>
+                    </div>
+                    <div class="fade-in mt-12 text-2xl max-w-5xl mx-auto content-box rounded-lg p-6" style="animation-delay: 1.6s;">
+                        <p>Está revolucionando la creatividad, la programación, la educación y la ciencia, como en el análisis de datos médicos para descubrir curas.</p>
+                    </div>
+                </div>
+                <div class="footer-note">8 / 10<br>IA Generativa</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 9: Tendencias para 2025 ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">El Futuro Cercano: Tendencias para 2025</h1>
+                    <div class="space-y-4 text-left max-w-4xl mx-auto">
+                        <div class="content-box rounded-lg p-4 flex items-center gap-4 list-item-anim" style="animation-delay: 0.4s;">
+                            <i class="fas fa-rocket text-4xl text-cyan-300 w-12 text-center"></i>
+                            <p class="text-xl"><b>IA Generativa Avanzada:</b> Modelos más rápidos, eficientes y personalizados.</p>
+                        </div>
+                         <div class="content-box rounded-lg p-4 flex items-center gap-4 list-item-anim" style="animation-delay: 0.6s;">
+                            <i class="fas fa-users-cog text-4xl text-amber-300 w-12 text-center"></i>
+                            <p class="text-xl"><b>Agentes de IA:</b> Sistemas colaborativos para resolver problemas complejos.</p>
+                        </div>
+                         <div class="content-box rounded-lg p-4 flex items-center gap-4 list-item-anim" style="animation-delay: 0.8s;">
+                            <i class="fas fa-leaf text-4xl text-green-300 w-12 text-center"></i>
+                            <p class="text-xl"><b>Sostenibilidad:</b> Optimización energética y conciencia del coste de los modelos.</p>
+                        </div>
+                         <div class="content-box rounded-lg p-4 flex items-center gap-4 list-item-anim" style="animation-delay: 1.0s;">
+                            <i class="fas fa-balance-scale text-4xl text-red-300 w-12 text-center"></i>
+                            <p class="text-xl"><b>Ética y Regulación:</b> Creación de marcos legales para un uso responsable.</p>
+                        </div>
+                         <div class="content-box rounded-lg p-4 flex items-center gap-4 list-item-anim" style="animation-delay: 1.2s;">
+                            <i class="fas fa-user-tag text-4xl text-purple-300 w-12 text-center"></i>
+                            <p class="text-xl"><b>Hiperpersonalización:</b> Productos y servicios adaptados a escala individual.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-note">9 / 10<br>Futuro Cercano</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 10: La Nueva Era ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Conclusión: Al Borde de una Nueva Era</h1>
+                    <h2 class="subtitle text-2xl mb-12 fade-in-up" style="animation-delay: 0.3s;">El impacto de la IA será comparable al del <span class="font-bold text-amber-400">fuego</span> o la <span class="font-bold text-cyan-300">electricidad</span>.</h2>
+                    <div class="flex justify-around items-center text-center w-full max-w-4xl mx-auto">
+                        <div class="pop-in" style="animation-delay: 0.8s;">
+                            <i class="fas fa-industry text-7xl text-gray-300"></i>
+                            <p class="mt-4 text-xl">Automatización de Industrias</p>
+                        </div>
+                         <div class="pop-in" style="animation-delay: 1.1s;">
+                            <i class="fas fa-globe-americas text-7xl text-green-300"></i>
+                            <p class="mt-4 text-xl">Democratización de la Sanidad y Educación</p>
+                        </div>
+                         <div class="pop-in" style="animation-delay: 1.4s;">
+                            <i class="fas fa-mobile-alt text-7xl text-blue-300"></i>
+                            <p class="mt-4 text-xl">IA en todos nuestros dispositivos (Edge Computing)</p>
+                        </div>
+                    </div>
+                     <div class="fade-in mt-16 text-2xl content-box rounded-lg p-6" style="animation-delay: 1.8s;">
+                        <p>Estamos ante una fuerza tecnológica que va a redefinir nuestro mundo de formas que hoy apenas empezamos a imaginar.</p>
+                    </div>
+                </div>
+                <div class="footer-note">10 / 10<br>Conclusiones</div>
+            </div>
+
+
+        </div>
+
+        <div id="script-panel">
+            <!-- El guion se cargará aquí -->
+        </div>
+    </div>
+
+    <!-- ===== CONTROLES DE NAVEGACIÓN Y AUDIO ===== -->
+    <div id="navigation-controls">
+        <button id="prev-btn" title="Anterior"><i class="fas fa-arrow-left"></i></button>
+        <span id="slide-counter">1 / 10</span>
+        <button id="next-btn" title="Siguiente"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    <audio id="audio-player" controls>
+        <source src="2.wav" type="audio/wav">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const counterElement = document.getElementById('slide-counter');
+            const scriptPanel = document.getElementById('script-panel');
+            let currentSlide = 0;
+
+            const scriptsBySlide = [
+                {
+                    "title": "DIAPOSITIVA 1: La Aceleración Vertiginosa",
+                    "script": "Desde entonces, la aceleración ha sido vertiginosa. En 2011, otra máquina de IBM, llamada Watson, compitió en el concurso de televisión 'Jeopardy!', que requiere una comprensión profunda del lenguaje natural, los dobles sentidos y la ironía. Watson barrió a los campeones humanos. Ese mismo año, Apple lanzó Siri, poniendo un asistente de IA en el bolsillo de millones de personas. La explosión del Deep Learning en la última década ha sido la que ha revolucionado el reconocimiento de imágenes, de voz y el procesamiento del lenguaje, llevándonos a los sistemas que usamos hoy."
+                },
+                {
+                    "title": "DIAPOSITIVA 2: La Gran Pregunta",
+                    "script": "Y esta explosión nos lleva a una pregunta clave: ¿de qué tipos de inteligencia artificial estamos hablando exactamente? Porque no toda la IA es igual. Hay dos formas principales de clasificarla."
+                },
+                {
+                    "title": "DIAPOSITIVA 3: IA Débil (Estrecha)",
+                    "script": "La primera distinción es entre IA Débil y IA Fuerte. La IA Débil, también llamada IA Estrecha o 'Narrow AI', es prácticamente toda la inteligencia artificial que existe en el mundo hoy. Son sistemas diseñados y entrenados para una tarea muy específica. Siri es un ejemplo de IA débil: es fantástica para responder preguntas o poner una alarma, pero no puedes pedirle que te escriba una novela o que te dé consejos sobre tus inversiones. Los sistemas de reconocimiento facial, los algoritmos de recomendación de Netflix, los coches autónomos de Tesla... todos son ejemplos increíblemente potentes de IA Débil. Son especialistas, genios en su pequeño campo de acción, pero carecen de conciencia, de inteligencia general y no pueden aplicar su conocimiento a tareas para las que no fueron diseñados."
+                },
+                {
+                    "title": "DIAPOSITIVA 4: IA Fuerte (General)",
+                    "script": "La IA Fuerte, o Inteligencia Artificial General (IAG), es el gran objetivo, el santo grial de la investigación. Hablamos de una IA hipotética que tendría una inteligencia similar a la humana. Podría comprender, aprender y aplicar su conocimiento para resolver cualquier problema, no solo uno específico. Un sistema de IA Fuerte podría razonar, planificar, tener conciencia de sí mismo y generalizar su aprendizaje de un dominio a otro, exactamente como hacemos nosotros. Hoy por hoy, esto sigue perteneciendo al campo de la ciencia ficción, pero es la meta que impulsa gran parte de la investigación."
+                },
+                {
+                    "title": "DIAPOSITIVA 5: IA Simbólica",
+                    "script": "La segunda distinción tiene que ver con el 'cómo', con el enfoque filosófico para construir estas mentes artificiales. Aquí tenemos dos grandes corrientes: la IA Simbólica y el Conexionismo. La IA Simbólica es el enfoque clásico, el que dominó desde los años 50 hasta los 80. Su idea central es que la inteligencia se puede reducir a la manipulación de símbolos siguiendo reglas lógicas. Es como darle a la máquina un gran libro de reglas. Por ejemplo: 'Regla número 1: si un objeto es un pájaro, entonces puede volar'. 'Regla número 2: si un objeto es un pingüino, entonces es un pájaro'. 'Regla número 3: si un objeto es un pingüino, entonces no puede volar'. El sistema utiliza estas reglas explícitas para razonar. Los sistemas expertos eran el ejemplo perfecto de esto. Su gran ventaja es que son transparentes. Podemos ver exactamente por qué tomaron una decisión. Su gran desventaja es que son muy rígidos. No pueden manejar la incertidumbre y si se encuentran con algo nuevo que no está en sus reglas, simplemente no saben qué hacer."
+                },
+                {
+                    "title": "DIAPOSITIVA 6: Conexionismo",
+                    "script": "El Conexionismo es el enfoque que domina hoy y es la base del Deep Learning y las redes neuronales. En lugar de reglas, se inspira en el cerebro. No le damos un libro de reglas. Le damos ejemplos. Muchísimos ejemplos. Es como enseñarle a un niño a reconocer un perro. No le das una definición de diccionario; le muestras muchos perros diferentes. El modelo conexionista, a través de su red de neuronas artificiales, aprende los patrones por sí mismo. Su gran ventaja es su flexibilidad y su poder para resolver problemas increíblemente complejos. Su desventaja es que a menudo funcionan como una 'caja negra'. Sabemos que funcionan, que dan la respuesta correcta, pero no siempre es fácil entender cómo llegaron a esa conclusión."
+                },
+                 {
+                    "title": "DIAPOSITIVA 7: La Analogía del Chef",
+                    "script": "Para que lo entiendan mejor, imaginen que queremos crear un chef de IA. El enfoque simbólico sería darle un libro de recetas gigante con instrucciones precisas para cada plato. El chef seguirá las recetas al pie de la letra y cocinará perfectamente esos platos, pero será incapaz de crear algo nuevo o de improvisar si le falta un ingrediente. El enfoque conexionista sería poner a un aprendiz de chef a probar miles de platos, a experimentar con ingredientes y a aprender de sus errores y aciertos, hasta que desarrolle una 'intuición' culinaria. Este chef podría crear platos nuevos y adaptarse, pero si le preguntas por qué combinó ciertos ingredientes, quizás solo pueda decir: 'Porque sabía que funcionaría'. Hoy, muchos investigadores buscan crear sistemas híbridos que combinen lo mejor de ambos mundos: la capacidad de aprendizaje del conexionismo con la transparencia y el razonamiento de la IA simbólica."
+                },
+                {
+                    "title": "DIAPOSITIVA 8: La Revolución Generativa",
+                    "script": "Y esto nos trae directamente al presente y al futuro inmediato, que es, sencillamente, vertiginoso. El campo que está acaparando todos los titulares es, sin duda, la IA Generativa. Hablamos de modelos capaces no solo de analizar información, sino de crear contenido completamente nuevo. Todos hemos oído hablar de ChatGPT de OpenAI, capaz de generar textos asombrosos. O de DALL-E y Gemini de Google, que pueden crear imágenes increíblemente realistas a partir de una simple descripción de texto. Esto está revolucionando la creatividad, la programación, la educación... todo. Y no es solo para el ocio; en medicina, la IA ya analiza volúmenes de datos de pacientes para descubrir patrones en enfermedades que nos ayudarán a encontrar curas."
+                },
+                {
+                    "title": "DIAPOSITIVA 9: Tendencias para 2025",
+                    "script": "Si miramos hacia el futuro cercano, digamos hacia 2025, hay varias tendencias que van a marcar el camino. En primer lugar, la IA Generativa seguirá avanzando a pasos agigantados. Veremos modelos más eficientes, más rápidos y mucho más personalizados. En segundo lugar, veremos un auge de los 'agentes de IA'. Sistemas diseñados para colaborar entre sí y con los humanos para resolver problemas complejos. La colaboración entre la creatividad humana y la eficiencia de la IA será la norma, no la excepción. En tercer lugar, la sostenibilidad se convertirá en un tema central. Usaremos la IA para optimizar el consumo de energía y combatir el cambio climático. Pero al mismo tiempo, seremos cada vez más conscientes del enorme coste energético que tienen estos grandes modelos, lo que impulsará la búsqueda de técnicas más eficientes. En cuarto lugar, la ética y la regulación. A medida que la IA se vuelve más poderosa, las preguntas sobre la privacidad de los datos, los sesgos en los algoritmos y el uso responsable se vuelven críticas. Los próximos años serán cruciales para establecer un marco legal y ético que guíe su desarrollo. Y finalmente, la quinta tendencia será la hiperpersonalización. La IA permitirá adaptar productos y servicios a una escala nunca vista. Desde planes de estudio personalizados para cada estudiante hasta tratamientos médicos diseñados para el ADN de un paciente concreto."
+                },
+                {
+                    "title": "DIAPOSITIVA 10: La Nueva Era",
+                    "script": "Si miramos aún más lejos, las predicciones son transformadoras. Se estima que para 2035, industrias enteras podrían estar casi totalmente automatizadas, lo que nos obligará a repensar por completo la naturaleza del trabajo. Veremos la IA integrada en todas las aplicaciones en la nube, y el auge del 'edge computing', donde el procesamiento de datos se hará directamente en nuestros dispositivos, como teléfonos o coches, mejorando la velocidad y la privacidad. Y quizás lo más importante, la IA tiene el potencial de democratizar el acceso a la educación y a la sanidad de calidad, llevando conocimiento y atención personalizada a cualquier rincón del planeta. Estamos al borde de una nueva era. Algunos comparan el impacto que tendrá la inteligencia artificial en la humanidad con el que tuvieron en su día el descubrimiento del fuego o la invención de la electricidad. Es una fuerza tecnológica que va a redefinir nuestro mundo de formas que hoy apenas empezamos a imaginar."
+                }
+            ];
+
+            function showSlide(index) {
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.remove('active');
+                }
+                currentSlide = index;
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.add('active');
+                }
+                counterElement.textContent = `${currentSlide + 1} / ${slides.length}`;
+                prevBtn.disabled = (currentSlide === 0);
+                nextBtn.disabled = (currentSlide === slides.length - 1);
+                
+                if (scriptPanel && scriptsBySlide[index]) {
+                    const { title, script } = scriptsBySlide[index];
+                    const scriptParagraphs = script.split('\n').map(p => p.trim()).filter(Boolean);
+                    
+                    let htmlContent = `<h2>${title}</h2>`;
+                    htmlContent += `<h3>Guion</h3>`;
+                    scriptParagraphs.forEach(p => {
+                        htmlContent += `<p>${p}</p>`;
+                    });
+
+                    scriptPanel.innerHTML = htmlContent;
+                    scriptPanel.scrollTop = 0; // Scroll to top on new slide
+                }
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' && !nextBtn.disabled) {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
+                    prevBtn.click();
+                }
+            });
+
+            showSlide(0);
+        });
+    </script>
+</body>
+</html>

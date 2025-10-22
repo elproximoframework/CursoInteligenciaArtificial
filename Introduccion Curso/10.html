@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación: Tu Carrera en Inteligencia Artificial</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            background-color: #0c1421;
+            height: 100%;
+        }
+        .main-view {
+            display: flex;
+            height: 100vh;
+        }
+        .presentation-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        #script-panel {
+            width: 450px;
+            flex-shrink: 0;
+            background-color: #080f1a;
+            color: #e5e7eb;
+            border-left: 1px solid #1f2937;
+            overflow-y: auto;
+            padding: 2rem;
+            font-family: 'Roboto', sans-serif;
+        }
+        #script-panel h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #67e8f9; /* cyan-300 */
+            font-size: 1.5rem; /* text-2xl */
+            margin-bottom: 1rem;
+        }
+        #script-panel h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: #fde047; /* amber-300 */
+            font-size: 1.125rem; /* text-lg */
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        #script-panel p {
+            line-height: 1.625;
+            color: #d1d5db; /* gray-300 */
+            margin-bottom: 1rem;
+        }
+        .presentation-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+        }
+        .slide {
+            display: none;
+            width: 1280px; 
+            min-height: 720px; 
+            position: relative;
+            font-family: 'Roboto', sans-serif; 
+            color: white;
+            overflow: hidden;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            background: linear-gradient(135deg, #051937, #004d7a, #008793);
+        }
+        .slide.active {
+            display: flex;
+        }
+
+        .title { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .subtitle { font-family: 'Montserrat', sans-serif; font-weight: 600; }
+        .content-box { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .stars {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: -1;
+            background-image: radial-gradient(white, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
+            background-size: 150px 150px; opacity: 0.08;
+            animation: stars-move 60s linear infinite;
+        }
+        @keyframes stars-move {
+            from { background-position: 0 0; }
+            to { background-position: -1500px -1500px; }
+        }
+        .footer-note {
+            position: absolute; bottom: 1rem; right: 2rem; text-align: right;
+            font-size: 0.875rem; color: #9ca3af; z-index: 10;
+        }
+        #navigation-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+        }
+        #navigation-controls button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+        }
+        #navigation-controls button:hover:not(:disabled) { color: #67e8f9; transform: scale(1.1); }
+        #navigation-controls button:disabled { color: #4b5563; cursor: not-allowed; }
+        #slide-counter { color: white; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; }
+
+        /* --- ANIMACIONES GENERALES --- */
+        .active .fade-in-up { animation: fade-in-up-anim 0.8s ease-out forwards; opacity: 0; }
+        @keyframes fade-in-up-anim { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .active .fade-in { animation: fade-in-anim 1s ease-in forwards; opacity: 0; }
+        @keyframes fade-in-anim { from { opacity: 0; } to { opacity: 1; } }
+        .active .pop-in { animation: pop-in-anim 0.6s ease-out forwards; opacity: 0; transform: scale(0.5); }
+        @keyframes pop-in-anim { to { opacity: 1; transform: scale(1); } }
+        .active .stretch-in { animation: stretch-in-anim 0.8s ease-out forwards; transform-origin: left; transform: scaleX(0); }
+        @keyframes stretch-in-anim { to { transform: scaleX(1); } }
+        
+        /* --- DIAPOSITIVA 1 --- */
+        .active .board-icon { animation: pop-in-anim 0.8s 0.5s ease-out forwards, board-glow 3s 1.5s infinite ease-in-out; opacity: 0; transform: scale(0.5); }
+        @keyframes board-glow { 0%, 100% { filter: drop-shadow(0 0 15px #67e8f9); } 50% { filter: drop-shadow(0 0 25px #fde047); } }
+        .active .industry-icon { opacity: 0; animation: pop-in-anim 0.6s ease-out forwards; }
+
+        /* --- DIAPOSITIVA 2 & 3 --- */
+        .active .role-column { opacity: 0; animation: fade-in-up-anim 0.8s ease-out forwards; }
+        .active .bridge-arrow { opacity: 0; animation: fade-in-anim 1s 1.5s ease-in forwards; }
+
+        /* --- DIAPOSITIVA 4 --- */
+        .active .category-box { opacity: 0; animation: fade-in-up-anim 0.8s ease-out forwards; }
+
+        /* --- DIAPOSITIVA 5 --- */
+        .active .t-shape-h { animation: stretch-h 1s 0.5s ease-out forwards; transform-origin: center; transform: scaleX(0); }
+        @keyframes stretch-h { to { transform: scaleX(1); } }
+        .active .t-shape-v { animation: stretch-v 1s 1s ease-out forwards; transform-origin: top; transform: scaleY(0); }
+        @keyframes stretch-v { to { transform: scaleY(1); } }
+        .active .portfolio-link { opacity: 0; animation: fade-in-up-anim 0.8s 2s ease-out forwards; }
+        
+        /* --- DIAPOSITIVA 6 --- */
+        .active .final-icon-pulse { animation: icon-pulse 2.5s infinite ease-in-out; }
+        @keyframes icon-pulse { 0%, 100% { transform: scale(1); color: #67e8f9; } 50% { transform: scale(1.1); color: #fde047; } }
+        
+        #audio-player { position: fixed; bottom: 15px; left:20%; transform: translateX(-50%); width: 80%; max-width: 500px; z-index: 1000; opacity: 0.85; transition: opacity 0.3s; }
+        #audio-player:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="main-view">
+        <div class="presentation-wrapper">
+
+            <!-- ===== DIAPOSITIVA 1: El Gran Tablero de la Industria ===== -->
+            <div class="slide active">
+                <div class="stars"></div>
+                <div class="text-center">
+                    <div class="fade-in-up">
+                        <h2 class="subtitle text-4xl text-cyan-300">Módulo Nueve: Tu Carrera en IA</h2>
+                        <h1 class="title text-6xl mt-2 text-white">El Gran Tablero de la Industria</h1>
+                    </div>
+                    <div class="mt-12 w-full max-w-5xl flex justify-around items-center text-6xl relative">
+                        <i class="fas fa-landmark industry-icon text-blue-300" style="animation-delay: 1.2s;" title="Banca"></i>
+                        <i class="fas fa-tractor industry-icon text-green-300" style="animation-delay: 1.4s;" title="Agricultura"></i>
+                        <i class="fas fa-chess-board board-icon text-white text-9xl"></i>
+                        <i class="fas fa-pills industry-icon text-red-300" style="animation-delay: 1.6s;" title="Salud"></i>
+                        <i class="fas fa-gavel industry-icon text-yellow-300" style="animation-delay: 1.8s;" title="Legal"></i>
+                    </div>
+                    <div class="mt-12 content-box rounded-lg p-6 max-w-5xl text-center fade-in-up" style="animation-delay: 2.2s;">
+                        <p class="text-xl">La pregunta ya no es "¿Qué empresas usan IA?", sino "¿Cómo la están usando?". La IA se ha convertido en una capa fundacional en <span class="font-bold text-cyan-300">toda industria</span>, abriendo un campo de juego inmenso.</p>
+                    </div>
+                </div>
+                <div class="footer-note">1 / 6<br>Introducción a la Industria</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 2: Roles Clave I - El Explorador y el Constructor ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Los Arquitectos de la Inteligencia: Roles Clave (Parte I)</h1>
+                    <div class="grid grid-cols-2 gap-12 items-start">
+                        <!-- Data Scientist -->
+                        <div class="role-column content-box rounded-xl p-8" style="animation-delay: 0.2s;">
+                            <i class="fas fa-search-plus text-6xl mb-4 text-amber-300"></i>
+                            <h3 class="title text-3xl mb-4">Científico de Datos</h3>
+                            <p class="text-lg">El <span class="font-bold">explorador</span>. Se sumerge en los datos para responder preguntas de negocio complejas, encontrando patrones y "insights" ocultos. Su fuerte es la estadística y la comunicación.</p>
+                        </div>
+                        <!-- ML Engineer -->
+                        <div class="role-column content-box rounded-xl p-8" style="animation-delay: 0.4s;">
+                             <i class="fas fa-cogs text-6xl mb-4 text-cyan-300"></i>
+                            <h3 class="title text-3xl mb-4">Ingeniero de Machine Learning</h3>
+                            <p class="text-lg">El <span class="font-bold">constructor</span>. Toma los prototipos del laboratorio y los convierte en sistemas de producción robustos, eficientes y escalables. Domina el mundo de MLOps.</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-center items-center mt-12 gap-6 bridge-arrow">
+                        <p class="text-xl">Del Laboratorio</p>
+                        <i class="fas fa-long-arrow-alt-right text-4xl text-green-300"></i>
+                        <p class="text-xl">A la Producción</p>
+                    </div>
+                </div>
+                <div class="footer-note">2 / 6<br>Roles Clave I</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 3: Roles Clave II - El Pionero y el Habilitador ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Los Arquitectos de la Inteligencia: Roles Clave (Parte II)</h1>
+                    <div class="grid grid-cols-2 gap-12 items-start">
+                        <!-- AI Researcher -->
+                        <div class="role-column content-box rounded-xl p-8" style="animation-delay: 0.2s;">
+                            <i class="fas fa-lightbulb text-6xl mb-4 text-yellow-300"></i>
+                            <h3 class="title text-3xl mb-4">Investigador de IA</h3>
+                            <p class="text-lg">El <span class="font-bold">pionero</span>. Empuja los límites de lo posible, creando los algoritmos y arquitecturas del futuro. Su producto es el conocimiento, publicado en artículos científicos.</p>
+                        </div>
+                        <!-- Data Engineer -->
+                        <div class="role-column content-box rounded-xl p-8" style="animation-delay: 0.4s;">
+                             <i class="fas fa-stream text-6xl mb-4 text-blue-300"></i>
+                            <h3 class="title text-3xl mb-4">Ingeniero de Datos</h3>
+                            <p class="text-lg">El <span class="font-bold">habilitador</span>. Construye y mantiene las "autopistas" de datos. Sin su trabajo de recopilación, almacenamiento y procesamiento, nadie más podría funcionar.</p>
+                        </div>
+                    </div>
+                    <div class="mt-12 content-box rounded-lg p-6 max-w-5xl text-center fade-in-up" style="animation-delay: 1.2s;">
+                        <p class="text-xl">Desde la <span class="font-bold text-yellow-300">investigación fundamental</span> hasta la <span class="font-bold text-blue-300">infraestructura crítica</span>, cada rol es una pieza esencial del ecosistema.</p>
+                    </div>
+                </div>
+                <div class="footer-note">3 / 6<br>Roles Clave II</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 4: Nuevas Fronteras y Dónde Encontrarlas ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl text-center">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Nuevos Roles y Ecosistema Empresarial</h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                        <div class="text-left space-y-6">
+                             <h2 class="subtitle text-3xl text-cyan-300 fade-in-up" style="animation-delay: 0.2s;">Roles Emergentes</h2>
+                             <div class="content-box p-4 rounded-lg fade-in-up" style="animation-delay: 0.4s;">
+                                <h4 class="font-bold text-xl flex items-center gap-3"><i class="fas fa-comments text-green-300"></i> Prompt Engineer</h4>
+                                <p>Una habilidad clave: el arte de comunicarse de forma efectiva con los modelos.</p>
+                             </div>
+                             <div class="content-box p-4 rounded-lg fade-in-up" style="animation-delay: 0.6s;">
+                                <h4 class="font-bold text-xl flex items-center gap-3"><i class="fas fa-map-signs text-green-300"></i> AI Product Manager</h4>
+                                <p>El estratega que une negocio y tecnología para definir qué productos de IA construir.</p>
+                             </div>
+                        </div>
+                        <div class="text-left space-y-6">
+                            <h2 class="subtitle text-3xl text-amber-300 fade-in-up" style="animation-delay: 0.8s;">Tipos de Empresas</h2>
+                            <div class="content-box p-4 rounded-lg fade-in-up" style="animation-delay: 1.0s;"><h4 class="font-bold text-xl"><i class="fas fa-building mr-2"></i> Gigantes Tecnológicos:</h4><p>Escala masiva, recursos ilimitados.</p></div>
+                            <div class="content-box p-4 rounded-lg fade-in-up" style="animation-delay: 1.2s;"><h4 class="font-bold text-xl"><i class="fas fa-rocket mr-2"></i> Startups "AI-First":</h4><p>Alto riesgo, alta recompensa, aprendizaje veloz.</p></div>
+                            <div class="content-box p-4 rounded-lg fade-in-up" style="animation-delay: 1.4s;"><h4 class="font-bold text-xl"><i class="fas fa-industry mr-2"></i> Industrias Tradicionales:</h4><p>El sector de mayor crecimiento, impacto tangible.</p></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-note">4 / 6<br>Ecosistema</div>
+            </div>
+            
+            <!-- ===== DIAPOSITIVA 5: Construyendo tu Perfil ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                 <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Construyendo tu Perfil: El Profesional en "T"</h1>
+                     <div class="flex flex-col md:flex-row items-center justify-center gap-16">
+                        <!-- T-Shape Visual -->
+                        <div class="relative w-64 h-64 flex flex-col items-center">
+                            <div class="w-full h-8 bg-cyan-400 rounded-t-lg t-shape-h"></div>
+                            <div class="w-8 flex-grow bg-cyan-400 t-shape-v"></div>
+                            <div class="absolute top-0 w-full text-center text-black font-bold text-xl fade-in" style="animation-delay: 1.5s;">Amplitud (Conocimiento Amplio)</div>
+                            <div class="absolute top-1/2 -right-4 w-48 text-center text-white font-bold text-xl fade-in" style="transform: rotate(90deg) translate(50%, 0); transform-origin: center; animation-delay: 1.5s;">Profundidad (Especialización)</div>
+                        </div>
+
+                         <!-- Portfolio -->
+                        <div class="text-left max-w-lg">
+                            <h2 class="subtitle text-3xl text-amber-300 fade-in-up" style="animation-delay: 1.8s;">Demuéstralo con un Portafolio</h2>
+                            <p class="mt-4 text-xl fade-in-up" style="animation-delay: 2s;">La combinación de <span class="text-cyan-300 font-bold">amplitud y profundidad</span> te hace invaluable. Tu portafolio es la prueba tangible de tus habilidades.</p>
+                            <div class="mt-8 space-y-4 portfolio-link">
+                                <a href="#" class="block content-box rounded-lg p-4 text-xl hover:bg-green-500/50 transition-colors"><i class="fab fa-github mr-3"></i> Sube tus proyectos a GitHub.</a>
+                                <a href="#" class="block content-box rounded-lg p-4 text-xl hover:bg-green-500/50 transition-colors"><i class="fas fa-trophy mr-3"></i> Participa en competiciones de Kaggle.</a>
+                                <a href="#" class="block content-box rounded-lg p-4 text-xl hover:bg-green-500/50 transition-colors"><i class="fas fa-robot mr-3"></i> Construye un agente que resuelva un problema real.</a>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+                <div class="footer-note">5 / 6<br>Tu Perfil</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 6: Conclusión ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Más Allá del Código: La Mentalidad del Éxito</h1>
+                    <div class="grid grid-cols-2 gap-8">
+                        <!-- Soft Skills -->
+                        <div class="role-column content-box rounded-xl p-8" style="animation-delay: 0.2s;">
+                            <i class="fas fa-users text-6xl mb-4 text-green-300"></i>
+                            <h3 class="title text-3xl mb-4">Comunicación</h3>
+                            <p class="text-lg">Un <span class="font-bold">multiplicador de fuerza</span>. La capacidad de traducir entre el mundo técnico y el de negocio es lo que te convierte en un líder.</p>
+                        </div>
+                        <!-- Continuous Learning -->
+                        <div class="role-column content-box rounded-xl p-8" style="animation-delay: 0.4s;">
+                             <i class="fas fa-sync-alt text-6xl mb-4 text-yellow-300"></i>
+                            <h3 class="title text-3xl mb-4">Aprendizaje Continuo</h3>
+                            <p class="text-lg">El campo revoluciona, no evoluciona. Adopta la mentalidad de que el viaje de aprendizaje <span class="font-bold">acaba de comenzar</span>.</p>
+                        </div>
+                    </div>
+                    <div class="pop-in mt-16" style="animation-delay: 1.2s;">
+                        <i class="fas fa-door-open text-8xl text-cyan-300 final-icon-pulse"></i>
+                        <h2 class="title text-4xl mt-4 text-white">LAS PUERTAS ESTÁN ABIERTAS</h2>
+                    </div>
+                    <div class="mt-8 text-xl max-w-5xl mx-auto fade-in" style="animation-delay: 2.0s;">
+                        <p>Las oportunidades para ser los arquitectos de esta nueva era de la ingeniería son, sencillamente, ilimitadas.</p>
+                    </div>
+                </div>
+                <div class="footer-note">6 / 6<br>Conclusiones</div>
+            </div>
+
+        </div>
+
+        <div id="script-panel">
+            <!-- El guion se cargará aquí -->
+        </div>
+    </div>
+
+    <!-- ===== CONTROLES DE NAVEGACIÓN Y AUDIO ===== -->
+    <div id="navigation-controls">
+        <button id="prev-btn" title="Anterior"><i class="fas fa-arrow-left"></i></button>
+        <span id="slide-counter">1 / 6</span>
+        <button id="next-btn" title="Siguiente"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    <audio id="audio-player" controls>
+        <source src="10.wav" type="audio/wav">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const counterElement = document.getElementById('slide-counter');
+            const scriptPanel = document.getElementById('script-panel');
+            let currentSlide = 0;
+
+            const scriptsBySlide = [
+                {
+                    "title": "DIAPOSITIVA 1: El Gran Tablero de la Industria",
+                    "script": "Módulo Nueve. Hemos viajado a través de los fundamentos matemáticos... hemos ensamblado una caja de herramientas increíblemente poderosa. Ahora, llegamos a la pregunta final, la que lo conecta todo con el mundo real: ¿Y ahora qué? ¿Cómo convertimos este conocimiento en una carrera?...Lo primero que hay que entender, y esto es fundamental, es que la pregunta \"¿Qué empresas trabajan con IA?\" ya está obsoleta... La respuesta correcta es: todas. Estamos en un punto de inflexión en el que la inteligencia artificial está dejando de ser un departamento especializado... para convertirse en una capa fundacional del negocio... toda industria se está convirtiendo, a su manera, en una industria de IA. Esto significa que el campo de juego es inmenso y las oportunidades están en todas partes."
+                },
+                {
+                    "title": "DIAPOSITIVA 2: Roles Clave I",
+                    "script": "Dentro de este vasto campo de juego, los roles profesionales se han ido especializando... En primer lugar, tenemos al Científico de Datos o Data Scientist. Piensen en él como el explorador, el detective. Su trabajo no empieza con el modelo, empieza con la pregunta de negocio. Se sumerge en los datos, los limpia, los analiza y utiliza la estadística y el machine learning para encontrar patrones... Su objetivo es responder a preguntas como \"¿Por qué están abandonando nuestros clientes?\"...En segundo lugar, y aquí es donde muchos ingenieros encuentran su lugar natural, está el Ingeniero de Machine Learning... Si el científico de datos es el que diseña el prototipo de un motor revolucionario en el laboratorio, el ingeniero de machine learning es el que lo saca de allí y lo instala en un coche de producción... Su trabajo es tomar los modelos, optimizarlos para que sean rápidos y eficientes... Es el puente entre la ciencia de datos y la ingeniería de software."
+                },
+                {
+                    "title": "DIAPOSITIVA 3: Roles Clave II",
+                    "script": "En tercer lugar, está el Investigador de IA o AI Researcher. Este es el pionero, el que empuja los límites de lo que es posible... Su día a día no consiste en resolver un problema de negocio inmediato, sino en crear los algoritmos y las arquitecturas que los demás usaremos dentro de cinco años. Su producto final no es un servicio en producción, sino un artículo científico...En cuarto lugar, tenemos al héroe anónimo de todo este ecosistema: el Ingeniero de Datos o Data Engineer. Sin él, nadie más podría hacer su trabajo. Es el arquitecto y el constructor de las autopistas por las que fluyen los datos... Si los datos son el combustible de la IA, el ingeniero de datos es el que construye toda la refinería y la red de distribución."
+                },
+                {
+                    "title": "DIAPOSITIVA 4: Nuevas Fronteras y Ecosistema",
+                    "script": "Y finalmente, con la explosión de la IA generativa, están surgiendo nuevos roles. Se habla mucho del Prompt Engineer, pero más que un puesto de trabajo a largo plazo, es una habilidad fundamental... El rol que sí está ganando una tracción inmensa es el de AI Product Manager, el estratega que tiene un pie en el mundo del negocio y otro en el mundo técnico...Sabiendo esto, ¿dónde encontramos a estas empresas? Las podemos agrupar en tres grandes categorías. Primero, los gigantes tecnológicos, los FAANG y similares... Segundo, las startups \"AI-First\"... Y tercero, y este es el sector más grande y con mayor crecimiento, las industrias tradicionales en proceso de transformación. Bancos, aseguradoras, empresas de logística..."
+                },
+                {
+                    "title": "DIAPOSITIVA 5: Construyendo tu Perfil",
+                    "script": "Entonces, ¿cómo te preparas para entrar en este mundo? ¿Cómo construyes un perfil atractivo? La clave es pensar en ti mismo como un profesional en forma de \"T\". La barra horizontal de la \"T\" representa tu conocimiento amplio. Debes entender todo el ciclo de vida de la IA... Pero la barra vertical de la \"T\" representa tu especialización profunda... Esa combinación de amplitud y profundidad es lo que te hace invaluable...Para demostrarlo, tu portafolio es tu mejor carta de presentación. Un título universitario abre la puerta, pero un portafolio de proyectos demuestra que puedes caminar por ella. Crea una cuenta en GitHub y sube tus proyectos. Participa en competiciones de Kaggle. Intenta replicar un artículo científico... Estos proyectos son la prueba tangible de tus habilidades."
+                },
+                {
+                    "title": "DIAPOSITIVA 6: Mentalidad de Éxito y Conclusión",
+                    "script": "Pero no todo es código. Las habilidades blandas, especialmente la comunicación, son un multiplicador de fuerza. De nada sirve construir el modelo más preciso del mundo si no eres capaz de explicarle al director de marketing, en un lenguaje que entienda, por qué es útil...Y por último, adopta una mentalidad de aprendizaje continuo. El campo de la inteligencia artificial no evoluciona, revoluciona... Esto no es algo para asustarse, es la parte más emocionante de trabajar en este sector... Sigue a los investigadores clave en las redes sociales, acostúmbrate a leer resúmenes de artículos de ArXiv... El viaje de aprendizaje que hemos hecho en estos módulos no es el final, es solo el comienzo. Las puertas están abiertas, y las oportunidades para ser los arquitectos de esta nueva era de la ingeniería son, sencillamente, ilimitadas."
+                }
+            ];
+
+            function showSlide(index) {
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.remove('active');
+                }
+                currentSlide = index;
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.add('active');
+                }
+                counterElement.textContent = `${currentSlide + 1} / ${slides.length}`;
+                prevBtn.disabled = (currentSlide === 0);
+                nextBtn.disabled = (currentSlide === slides.length - 1);
+                
+                if (scriptPanel && scriptsBySlide[index]) {
+                    const { title, script } = scriptsBySlide[index];
+                    const scriptParagraphs = script.split('...').map(p => p.replace(/\n/g, ' ').trim()).filter(Boolean);
+                    
+                    let htmlContent = `<h2>${title}</h2>`;
+                    htmlContent += `<h3>Guion</h3>`;
+                    scriptParagraphs.forEach(p => {
+                        htmlContent += `<p>${p}</p>`;
+                    });
+
+                    scriptPanel.innerHTML = htmlContent;
+                }
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' && !nextBtn.disabled) {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
+                    prevBtn.click();
+                }
+            });
+
+            showSlide(0);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+Ahora, os propongo un reto, vamos a aprender Python, utilizando la IA. Para ello, utilizando la herramienta de cursor, vamos a enviarle el contenido del video, os lo dejo en el enlace del repositorio, situado en la descripción. Generamos un archivo .py e insertamos en el buscado de la parte derecha los archivos .txt de la primera sección del esta clase. Tras ello lo pedimos a la herramienta IA que nos de un ejemplo de código a partir de lo comentado en el guion, y ejecutamos. En unos segundos tenemos todo este código en Python. Destacar que esto es un pequeño ejemplo de uso de esta herramienta, podeis ver ejemplos de uso en proyectos de ingeniero si pulsais en el enlace de la parte superior. 
+Podemos echar un visto a todo lo generado, al inicio define variables, luego las estructuras de datos, estructuras de control de flujo, funciones avanzadas. Tras ello entramos en la programación orientada a objetos, definimos las clases y luego creamos clases de esos objetos. Aquí vemos el manejo de errores y excepciones, las listas y su manejo, el uso de archivos y por ultimo un ejemplo completo. 
+Podemos ejecutar el código y ver la salida de todos los print. 
+A partir de aquí podeis continuar aprendiendo, podemos ayudarnos de la IA, preguntándole cosas o pidiéndole que genere cambios. Pero lo mas importante es que entendamos que estamos modificando.
+
+
+
+Ahora os toca a vosotros, os dejo el guion del video y generáis el código en Python, instalar previamente scikit-learn, o dejar que el propio curso os lo instale si lo configurais en modo agente

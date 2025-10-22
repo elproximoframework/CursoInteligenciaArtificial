@@ -1,3 +1,4 @@
 # Ignorar archivos de video MP4
 *.mp4
+*.mov
 

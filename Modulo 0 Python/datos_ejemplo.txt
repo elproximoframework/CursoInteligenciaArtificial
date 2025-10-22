@@ -1,0 +1,18 @@
+REPORTE DE DATOS
+========================================
+
+Registro 1:
+  sensor: A1
+  temperatura: 22.5
+  humedad: 65
+
+Registro 2:
+  sensor: B2
+  temperatura: 23.1
+  humedad: 62
+
+Registro 3:
+  sensor: C3
+  temperatura: 21.8
+  humedad: 68
+

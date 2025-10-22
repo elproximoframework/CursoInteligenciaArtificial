@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación: El Taller del Ingeniero de IA</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            background-color: #0c1421;
+            height: 100%;
+        }
+        .main-view {
+            display: flex;
+            height: 100vh;
+        }
+        .presentation-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        #script-panel {
+            width: 450px;
+            flex-shrink: 0;
+            background-color: #080f1a;
+            color: #e5e7eb;
+            border-left: 1px solid #1f2937;
+            overflow-y: auto;
+            padding: 2rem;
+            font-family: 'Roboto', sans-serif;
+        }
+        #script-panel h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #67e8f9; /* cyan-300 */
+            font-size: 1.5rem; /* text-2xl */
+            margin-bottom: 1rem;
+        }
+        #script-panel h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: #fde047; /* amber-300 */
+            font-size: 1.125rem; /* text-lg */
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        #script-panel p {
+            line-height: 1.625;
+            color: #d1d5db; /* gray-300 */
+            margin-bottom: 1rem;
+        }
+        .slide {
+            display: none;
+            width: 1280px; 
+            min-height: 720px; 
+            position: relative;
+            font-family: 'Roboto', sans-serif; 
+            color: white;
+            overflow: hidden;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            background: linear-gradient(135deg, #051937, #004d7a, #008793);
+        }
+        .slide.active {
+            display: flex;
+        }
+
+        .title { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .subtitle { font-family: 'Montserrat', sans-serif; font-weight: 600; }
+        .content-box { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .stars {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: -1;
+            background-image: radial-gradient(white, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
+            background-size: 150px 150px; opacity: 0.08;
+            animation: stars-move 60s linear infinite;
+        }
+        @keyframes stars-move {
+            from { background-position: 0 0; }
+            to { background-position: -1500px -1500px; }
+        }
+        .footer-note {
+            position: absolute; bottom: 1rem; right: 2rem; text-align: right;
+            font-size: 0.875rem; color: #9ca3af; z-index: 10;
+        }
+        #navigation-controls {
+            position: fixed;
+            bottom: 20px;
+            left: calc(50% - 225px); /* Center in the presentation area */
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+        }
+        #navigation-controls button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+        }
+        #navigation-controls button:hover:not(:disabled) { color: #67e8f9; transform: scale(1.1); }
+        #navigation-controls button:disabled { color: #4b5563; cursor: not-allowed; }
+        #slide-counter { color: white; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; }
+
+        /* --- ANIMACIONES GENERALES --- */
+        .active .fade-in-up { animation: fade-in-up-anim 0.8s ease-out forwards; opacity: 0; }
+        @keyframes fade-in-up-anim { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .active .fade-in { animation: fade-in-anim 1s ease-in forwards; opacity: 0; }
+        @keyframes fade-in-anim { from { opacity: 0; } to { opacity: 1; } }
+        .active .pop-in { animation: pop-in-anim 0.6s ease-out forwards; opacity: 0; transform: scale(0.5); }
+        @keyframes pop-in-anim { to { opacity: 1; transform: scale(1); } }
+        
+        /* --- Animaciones específicas --- */
+        .active .icon-pulse { animation: pulse-icon 2s infinite ease-in-out; }
+        @keyframes pulse-icon { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px #67e8f9); } 50% { transform: scale(1.1); filter: drop-shadow(0 0 15px #fde047); } }
+
+        .active .branch-line { animation: grow-line 1s ease-out forwards; transform-origin: left; transform: scaleX(0); }
+        @keyframes grow-line { to { transform: scaleX(1); } }
+
+        .active .arrow-flow { animation: arrow-flow-anim 2s infinite ease-in-out; }
+        @keyframes arrow-flow-anim { 0% { opacity: 0; transform: translateX(-20px); } 50% { opacity: 1; } 100% { opacity: 0; transform: translateX(20px); } }
+
+        .active .conflict-shake { animation: shake-anim 0.5s 1.5s linear infinite; }
+        @keyframes shake-anim { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+        #audio-player { position: fixed; bottom: 15px; left:20%; transform: translateX(-50%); width: 80%; max-width: 500px; z-index: 1000; opacity: 0.85; transition: opacity 0.3s; }
+        #audio-player:hover { opacity: 1; }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-view">
+        <div class="presentation-wrapper">
+
+            <!-- Diapositiva 1: Bienvenida -->
+            <div class="slide active">
+                <div class="stars"></div>
+                <div class="text-center">
+                    <div class="fade-in-up">
+                        <h2 class="subtitle text-4xl text-cyan-300">El Próximo Framework en Ingeniería</h2>
+                        <h1 class="title text-6xl mt-2 text-white">Arquitectos de la Inteligencia Artificial</h1>
+                    </div>
+                    <div class="mt-16 flex justify-center items-center gap-16 text-8xl">
+                        <i class="fas fa-cogs pop-in text-blue-300" style="animation-delay: 0.5s;"></i>
+                        <i class="fas fa-plus pop-in text-gray-400 text-6xl" style="animation-delay: 0.8s;"></i>
+                        <i class="fas fa-brain pop-in text-pink-400 icon-pulse" style="animation-delay: 1.1s;"></i>
+                    </div>
+                    <div class="mt-16 content-box rounded-lg p-6 max-w-5xl text-center fade-in" style="animation-delay: 1.5s;">
+                        <p class="text-xl">Construyendo el puente entre la ingeniería que conocemos y la que está por venir, con las bases y herramientas para liderar la innovación.</p>
+                    </div>
+                </div>
+                <div class="footer-note">1 / 12<br>Introducción</div>
+            </div>
+
+            <!-- Diapositiva 2: La Piedra Angular -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">La Piedra Angular de la IA</h1>
+                    <div class="flex flex-col items-center">
+                        <div class="relative pop-in" style="animation-delay: 0.5s;">
+                            <i class="fab fa-python text-amber-300" style="font-size: 12rem; filter: drop-shadow(0 0 20px #fde047);"></i>
+                            <i class="fas fa-gem absolute text-cyan-200 text-6xl" style="top: -10px; right: -20px; transform: rotate(15deg);"></i>
+                        </div>
+                        <h2 class="subtitle text-4xl mt-8 fade-in-up" style="animation-delay: 1s;">Python</h2>
+                        <p class="mt-8 text-2xl max-w-4xl mx-auto fade-in-up" style="animation-delay: 1.5s;">
+                            El material versátil, fiable y potente sobre el que edificaremos nuestros sistemas inteligentes.
+                        </p>
+                    </div>
+                </div>
+                <div class="footer-note">2 / 12<br>La Herramienta Principal</div>
+            </div>
+
+            <!-- Diapositiva 3: Razón 1 - Sintaxis -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">¿Por qué Python? Razón #1</h1>
+                    <h2 class="subtitle text-3xl text-green-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Sintaxis Limpia y Legible</h2>
+                    <div class="flex items-center justify-center gap-8 bg-black/20 p-8 rounded-xl">
+                        <div class="text-center w-2/5 pop-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-code text-6xl text-red-400"></i>
+                            <p class="font-mono mt-4 bg-gray-900 p-2 rounded">for(i=0;i<5;i++){...}</p>
+                            <h3 class="font-bold mt-2">Complejidad</h3>
+                        </div>
+                        <div class="text-6xl text-green-300 pop-in" style="animation-delay: 0.8s;">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="text-center w-2/5 pop-in" style="animation-delay: 1.1s;">
+                            <i class="fas fa-feather-alt text-6xl text-green-300"></i>
+                            <p class="font-mono mt-4 bg-gray-900 p-2 rounded">for i in range(5):</p>
+                            <h3 class="font-bold mt-2">Elegancia</h3>
+                        </div>
+                    </div>
+                    <p class="mt-12 text-2xl max-w-5xl mx-auto fade-in-up" style="animation-delay: 1.5s;">
+                        Menos fricción, más concentración en el problema. Permite prototipar y colaborar con facilidad, centrándose en el <span class="font-bold text-green-300">"qué"</span> en lugar del <span class="font-bold text-red-400">"cómo"</span>.
+                    </p>
+                </div>
+                <div class="footer-note">3 / 12<br>Sintaxis</div>
+            </div>
+
+            <!-- Diapositiva 4: Razón 2 - Ecosistema -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">¿Por qué Python? Razón #2</h1>
+                    <h2 class="subtitle text-3xl text-yellow-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">El Ecosistema de Librerías</h2>
+                    <div class="relative flex justify-center items-center">
+                         <i class="fab fa-python text-8xl text-cyan-300 pop-in" style="animation-delay: 0.5s;"></i>
+                         <!-- Branches and Icons -->
+                         <div class="absolute w-24 h-1 bg-yellow-300/50 rounded-full branch-line" style="transform: rotate(45deg) translate(80px, -80px); animation-delay: 0.8s;"></div>
+                         <div class="absolute pop-in" style="transform: translate(140px, -140px); animation-delay: 1.3s;"><i class="fas fa-cubes text-4xl" title="NumPy"></i><p>NumPy</p></div>
+
+                         <div class="absolute w-24 h-1 bg-yellow-300/50 rounded-full branch-line" style="transform: rotate(-45deg) translate(80px, 80px); animation-delay: 1.0s;"></div>
+                         <div class="absolute pop-in" style="transform: translate(140px, 140px); animation-delay: 1.5s;"><i class="fas fa-table text-4xl" title="Pandas"></i><p>Pandas</p></div>
+
+                         <div class="absolute w-24 h-1 bg-yellow-300/50 rounded-full branch-line" style="transform: rotate(135deg) translate(80px, -80px); animation-delay: 1.2s;"></div>
+                         <div class="absolute pop-in" style="transform: translate(-140px, -140px); animation-delay: 1.7s;"><i class="fas fa-brain text-4xl" title="TensorFlow/PyTorch"></i><p>PyTorch</p></div>
+                    </div>
+                    <p class="mt-48 text-2xl max-w-4xl mx-auto fade-in" style="animation-delay: 2.2s;">
+                        Un portal a décadas de conocimiento científico y de ingeniería, empaquetado y listo para usar con una simple línea de código.
+                    </p>
+                </div>
+                <div class="footer-note">4 / 12<br>Ecosistema</div>
+            </div>
+
+            <!-- Diapositiva 5: Razón 3 - Comunidad -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">¿Por qué Python? Razón #3</h1>
+                    <h2 class="subtitle text-3xl text-pink-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">La Comunidad Global</h2>
+                    <div class="relative w-96 h-96">
+                        <i class="fas fa-globe-americas text-9xl text-blue-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pop-in" style="animation-delay: 0.5s;"></i>
+                        <div class="absolute top-10 left-10 pop-in" style="animation-delay: 0.8s;"><i class="fas fa-users text-5xl"></i><p>Foros</p></div>
+                        <div class="absolute top-10 right-10 pop-in" style="animation-delay: 1.0s;"><i class="fas fa-book text-5xl"></i><p>Tutoriales</p></div>
+                        <div class="absolute bottom-10 left-10 pop-in" style="animation-delay: 1.2s;"><i class="fab fa-github text-5xl"></i><p>Código</p></div>
+                        <div class="absolute bottom-10 right-10 pop-in" style="animation-delay: 1.4s;"><i class="fas fa-question-circle text-5xl"></i><p>Soluciones</p></div>
+                    </div>
+                    <p class="mt-8 text-2xl max-w-4xl mx-auto fade-in" style="animation-delay: 1.8s;">
+                        <span class="font-bold text-pink-300">Nunca estás solo.</span> Un soporte colectivo que acelera el aprendizaje y la resolución de problemas de forma espectacular.
+                    </p>
+                </div>
+                <div class="footer-note">5 / 12<br>Comunidad</div>
+            </div>
+
+            <!-- Diapositiva 6: Instalación -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Montando el Taller: La Instalación</h1>
+                    <div class="grid grid-cols-2 gap-12">
+                        <div class="content-box rounded-xl p-8 pop-in" style="animation-delay: 0.5s;">
+                            <i class="fab fa-python text-8xl mb-4 text-cyan-300"></i>
+                            <h3 class="title text-3xl mb-4">Python.org</h3>
+                            <p class="text-lg">La vía directa, limpia y minimalista. Control total sobre la instalación base.</p>
+                        </div>
+                        <div class="content-box rounded-xl p-8 pop-in" style="animation-delay: 0.8s;">
+                            <i class="fas fa-box-open text-8xl mb-4 text-green-300"></i>
+                            <h3 class="title text-3xl mb-4">Anaconda</h3>
+                            <p class="text-lg">Un kit de inicio integral. Viene con Python y cientos de librerías preinstaladas.</p>
+                        </div>
+                    </div>
+                    <p class="mt-12 text-2xl max-w-4xl mx-auto fade-in" style="animation-delay: 1.2s;">
+                        Dos caminos para un mismo destino. Para empezar, ¡cualquiera es excelente!
+                    </p>
+                </div>
+                <div class="footer-note">6 / 12<br>Instalación</div>
+            </div>
+
+            <!-- Diapositiva 7: PIP -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">La Varita Mágica del Ecosistema</h1>
+                    <h2 class="subtitle text-3xl text-amber-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">`pip`: El Gestor de Paquetes</h2>
+                    <div class="flex items-center justify-center gap-8">
+                        <i class="fas fa-magic text-8xl text-pink-400 pop-in" style="animation-delay: 0.5s;"></i>
+                        <div class="bg-black/30 font-mono text-2xl p-6 rounded-lg pop-in" style="animation-delay: 0.8s;">
+                            $ pip install <span class="text-amber-300">numpy</span>
+                        </div>
+                        <div class="relative text-8xl">
+                           <i class="fas fa-arrow-right pop-in text-gray-400" style="animation-delay: 1.1s;"></i>
+                        </div>
+                        <div class="text-8xl text-green-400 pop-in" style="animation-delay: 1.4s;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                     <p class="mt-16 text-2xl max-w-5xl mx-auto fade-in-up" style="animation-delay: 1.8s;">
+                        El comando que invoca la biblioteca infinita. Con una simple línea, traes a tu proyecto cualquier herramienta que necesites.
+                    </p>
+                </div>
+                <div class="footer-note">7 / 12<br>Gestor de Paquetes</div>
+            </div>
+
+            <!-- Diapositiva 8: Entornos Virtuales (Problema) -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Práctica Crucial: El Problema del Caos</h1>
+                    <div class="flex justify-center items-center gap-8">
+                         <div class="text-center pop-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-folder-open text-6xl text-cyan-300"></i>
+                            <p class="mt-2 font-bold">Proyecto A</p>
+                         </div>
+                         <div class="flex-grow max-w-sm text-center relative conflict-shake">
+                            <i class="fas fa-toolbox text-8xl text-red-400"></i>
+                            <p class="mt-2 font-bold text-red-400">CAJA DE HERRAMIENTAS ÚNICA</p>
+                            <p class="text-sm">Tornillo v1.0 / Tornillo v2.0</p>
+                         </div>
+                          <div class="text-center pop-in" style="animation-delay: 0.8s;">
+                            <i class="fas fa-folder-open text-6xl text-cyan-300"></i>
+                            <p class="mt-2 font-bold">Proyecto B</p>
+                         </div>
+                    </div>
+                    <div class="mt-12 grid grid-cols-2 gap-8 max-w-4xl mx-auto">
+                        <div class="fade-in text-left p-4" style="animation-delay: 1.2s;"><i class="fas fa-check text-green-400"></i> Proyecto A necesita Tornillo v1.0.</div>
+                        <div class="fade-in text-left p-4" style="animation-delay: 1.4s;"><i class="fas fa-times text-red-400"></i> ...pero v2.0 lo rompe.</div>
+                        <div class="fade-in text-left p-4" style="animation-delay: 1.6s;"><i class="fas fa-times text-red-400"></i> Proyecto B necesita Tornillo v2.0.</div>
+                        <div class="fade-in text-left p-4" style="animation-delay: 1.8s;"><i class="fas fa-check text-green-400"></i> ...pero v1.0 no le sirve.</div>
+                    </div>
+                     <p class="mt-8 text-2xl fade-in-up" style="animation-delay: 2.2s;">Un conflicto de dependencias es inevitable. Es un caos.</p>
+                </div>
+                <div class="footer-note">8 / 12<br>Entornos Virtuales: Problema</div>
+            </div>
+
+             <!-- Diapositiva 9: Entornos Virtuales (Solución) -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">La Solución Profesional: Aislamiento</h1>
+                    <h2 class="subtitle text-3xl text-green-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Entornos Virtuales</h2>
+                    <div class="grid grid-cols-2 gap-12">
+                         <div class="content-box rounded-xl p-8 pop-in" style="animation-delay: 0.5s;">
+                            <h3 class="title text-2xl mb-4">Entorno A</h3>
+                            <div class="flex items-center justify-center gap-4">
+                               <i class="fas fa-folder text-5xl text-cyan-300"></i>
+                               <i class="fas fa-plus text-3xl"></i>
+                               <div class="bg-black/30 p-2 rounded"><p>Tornillo v1.0</p></div>
+                               <i class="fas fa-check-circle text-4xl text-green-400 ml-4"></i>
+                            </div>
+                         </div>
+                         <div class="content-box rounded-xl p-8 pop-in" style="animation-delay: 0.8s;">
+                            <h3 class="title text-2xl mb-4">Entorno B</h3>
+                             <div class="flex items-center justify-center gap-4">
+                               <i class="fas fa-folder text-5xl text-cyan-300"></i>
+                               <i class="fas fa-plus text-3xl"></i>
+                               <div class="bg-black/30 p-2 rounded"><p>Tornillo v2.0</p></div>
+                               <i class="fas fa-check-circle text-4xl text-green-400 ml-4"></i>
+                            </div>
+                         </div>
+                    </div>
+                    <div class="mt-12 flex justify-center items-center gap-8 fade-in" style="animation-delay: 1.2s;">
+                        <p class="text-2xl">Herramientas: </p>
+                        <code class="bg-gray-900 p-3 rounded-lg text-xl">venv</code>
+                        <code class="bg-gray-900 p-3 rounded-lg text-xl">conda</code>
+                    </div>
+                    <p class="mt-8 text-2xl max-w-4xl mx-auto fade-in-up" style="animation-delay: 1.6s;">
+                        Cada proyecto tiene su propia caja de herramientas aislada. Proyectos <span class="font-bold">limpios, reproducibles y profesionales</span>.
+                    </p>
+                </div>
+                <div class="footer-note">9 / 12<br>Entornos Virtuales: Solución</div>
+            </div>
+
+            <!-- Diapositiva 10: VS Code y Jupyter -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                     <h1 class="title text-5xl mb-12 fade-in-up">Las Mesas de Trabajo</h1>
+                    <div class="grid grid-cols-2 gap-12">
+                        <div class="content-box rounded-xl p-8 pop-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-code-branch text-8xl mb-4 text-blue-400"></i>
+                            <h3 class="title text-3xl mb-4">Visual Studio Code</h3>
+                            <p class="text-lg">La navaja suiza para escribir código. Potente, personalizable y con un ecosistema de extensiones infinito.</p>
+                        </div>
+                        <div class="content-box rounded-xl p-8 pop-in" style="animation-delay: 0.8s;">
+                             <i class="fas fa-book-open text-8xl mb-4 text-orange-400"></i>
+                            <h3 class="title text-3xl mb-4">Jupyter Notebooks</h3>
+                            <p class="text-lg">El cuaderno de laboratorio digital. Para explorar, visualizar y documentar en un ciclo interactivo.</p>
+                        </div>
+                    </div>
+                     <p class="mt-12 text-2xl max-w-4xl mx-auto fade-in" style="animation-delay: 1.2s;">
+                        Dos herramientas para dos flujos de trabajo: <span class="font-bold text-blue-400">desarrollo</span> y <span class="font-bold text-orange-400">exploración</span>.
+                    </p>
+                </div>
+                <div class="footer-note">10 / 12<br>Editores y Notebooks</div>
+            </div>
+
+            <!-- Diapositiva 11: Google Colab -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Supercomputación para Todos</h1>
+                    <h2 class="subtitle text-3xl text-cyan-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Google Colab</h2>
+                    <div class="flex items-center justify-center gap-12">
+                        <div class="pop-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-laptop text-9xl"></i>
+                            <p class="mt-2">Tu portátil</p>
+                        </div>
+                        <div class="relative text-8xl text-cyan-300">
+                            <i class="fas fa-arrow-right pop-in" style="animation-delay: 0.8s;"></i>
+                        </div>
+                        <div class="pop-in" style="animation-delay: 1.1s;">
+                            <i class="fas fa-cloud text-9xl"></i>
+                            <p class="mt-2">Servidores de Google</p>
+                            <i class="fas fa-microchip text-4xl text-green-300 icon-pulse mt-2"></i><span class="ml-2 font-bold">GPU Gratis</span>
+                        </div>
+                    </div>
+                    <p class="mt-16 text-2xl max-w-5xl mx-auto fade-in-up" style="animation-delay: 1.5s;">
+                        Democratiza el acceso a hardware de alto rendimiento. Entrena modelos complejos desde cualquier lugar, sin coste.
+                    </p>
+                </div>
+                <div class="footer-note">11 / 12<br>Google Colab</div>
+            </div>
+
+            <!-- Diapositiva 12: Cursor y Conclusión -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">El Futuro: Ingeniería Asistida por IA</h1>
+                    <h2 class="subtitle text-3xl text-purple-400 mb-12 fade-in-up" style="animation-delay: 0.2s;">Cursor: El Editor Inteligente</h2>
+                    <div class="flex justify-center items-center gap-8">
+                        <i class="fas fa-code text-8xl pop-in" style="animation-delay: 0.5s;"></i>
+                        <i class="fas fa-plus text-6xl pop-in" style="animation-delay: 0.8s;"></i>
+                        <i class="fas fa-brain text-8xl text-purple-400 pop-in icon-pulse" style="animation-delay: 1.1s;"></i>
+                    </div>
+                    <p class="mt-8 text-2xl fade-in-up" style="animation-delay: 1.5s;">Un copiloto experto a tu lado mientras programas. Usamos la IA como medio para ser mejores ingenieros.</p>
+                    <div class="mt-12 w-full border-t border-cyan-300/50 fade-in" style="animation-delay: 2.0s;"></div>
+                    <p class="mt-12 text-2xl max-w-5xl mx-auto fade-in" style="animation-delay: 2.2s;">
+                        Con la base correcta y las herramientas adecuadas, <span class="font-bold text-cyan-300">no hay límite a lo que podemos crear</span>.
+                    </p>
+                </div>
+                <div class="footer-note">12 / 12<br>Conclusión</div>
+            </div>
+
+        </div>
+
+        <div id="script-panel">
+            <!-- El guion se cargará aquí -->
+        </div>
+    </div>
+
+    <!-- ===== CONTROLES DE NAVEGACIÓN Y AUDIO ===== -->
+    <div id="navigation-controls">
+        <button id="prev-btn" title="Anterior"><i class="fas fa-arrow-left"></i></button>
+        <span id="slide-counter">1 / 12</span>
+        <button id="next-btn" title="Siguiente"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    <audio id="audio-player" controls>
+        <source src="1.wav" type="audio/wav">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const counterElement = document.getElementById('slide-counter');
+            const scriptPanel = document.getElementById('script-panel');
+            let currentSlide = 0;
+
+            const scriptsBySlide = [
+                {
+                    "title": "DIAPOSITIVA 1: Bienvenida",
+                    "script": "¡Hola a todos y bienvenidos a bordo! Si estás aquí, eres como yo: un ingeniero, un constructor. Has sentido esa vibración en el aire llamada inteligencia artificial. Aquí, en 'El Próximo Framework en Ingeniería', nuestra misión es darte las bases, los planos y las herramientas para que te conviertas en uno de sus arquitectos. Vamos a construir juntos el puente entre la ingeniería que conocemos y la que está por venir."
+                },
+                {
+                    "title": "DIAPOSITIVA 2: La Piedra Angular",
+                    "script": "Todo gran proyecto de construcción empieza por preparar el terreno y elegir las herramientas adecuadas. Si la inteligencia artificial es la catedral que queremos construir, necesitamos una primera piedra angular, un material versátil y fiable sobre el que edificar todo lo demás. En nuestro mundo, ese material, ese lenguaje, es Python."
+                },
+                {
+                    "title": "DIAPOSITIVA 3: Razón 1 - Sintaxis",
+                    "script": "Mucha gente se pregunta, ¿por qué Python? En primer lugar, su sintaxis. Programar en Python se parece mucho a escribir en un inglés simplificado. Es limpio, es legible. Cuando estás lidiando con conceptos complejos, lo último que quieres es pelearte con el lenguaje. Python te permite concentrarte en el 'qué' quieres hacer, en lugar de en el 'cómo'. Esta baja fricción lo hace perfecto para prototipar y colaborar."
+                },
+                {
+                    "title": "DIAPOSITIVA 4: Razón 2 - Ecosistema",
+                    "script": "Pero la sencillez no lo es todo. El verdadero superpoder de Python es su ecosistema. Imagina una biblioteca infinita, donde cada libro es una herramienta increíblemente poderosa. ¿Necesitas cálculo numérico a alta velocidad? Tienes NumPy. ¿Analizar grandes conjuntos de datos? Ahí está Pandas. ¿Construir redes neuronales de vanguardia? Tienes TensorFlow y PyTorch. Python es un portal a décadas de conocimiento científico y de ingeniería, listo para ser usado."
+                },
+                {
+                    "title": "DIAPOSITIVA 5: Razón 3 - Comunidad",
+                    "script": "Finalmente, el tercer pilar es su comunidad. Cuando te adentras en la IA, vas a tener dudas y vas a encontrar errores. La comunidad de Python es tan gigantesca y activa que es casi seguro que alguien ya se ha enfrentado a tu mismo problema y ha compartido la solución. Foros, tutoriales, cursos, repositorios de código… nunca estás solo. Este soporte colectivo es una red de seguridad que acelera el aprendizaje de una forma espectacular."
+                },
+                {
+                    "title": "DIAPOSITIVA 6: Instalación",
+                    "script": "Ahora que sabemos por qué Python, vamos a construir nuestro taller digital. El primer paso es instalarlo. Podemos ir a la página oficial, python.org, para una instalación directa y minimalista. O podemos optar por una solución integral como Anaconda, un kit de inicio para científicos de datos que ya incluye cientos de librerías populares preinstaladas. Para empezar, cualquiera de las dos vías es excelente."
+                },
+                {
+                    "title": "DIAPOSITIVA 7: PIP",
+                    "script": "Una vez que tenemos Python, conocemos a su varita mágica: `pip`. `pip` es el gestor de paquetes de Python. Es el comando que nos permite invocar esa biblioteca infinita de la que hablábamos. Con un simple `pip install nombre-de-la-librería`, traemos a nuestro proyecto cualquier herramienta que necesitemos. Es así de simple y así de poderoso."
+                },
+                {
+                    "title": "DIAPOSITIVA 8: Entornos Virtuales (Problema)",
+                    "script": "Aquí llega una de las prácticas más cruciales: los entornos virtuales. Imagina que el Proyecto A necesita un tornillo versión 1.0, pero el Proyecto B, más moderno, necesita la versión 2.0. Si guardas todos tus tornillos en una única caja de herramientas, tienes un problema: o el Proyecto A se rompe, o el Proyecto B no funciona. Es un caos de dependencias."
+                },
+                {
+                    "title": "DIAPOSITIVA 9: Entornos Virtuales (Solución)",
+                    "script": "Los entornos virtuales solucionan esto. Un entorno virtual es como crear una caja de herramientas específica y aislada para cada proyecto. Para el Proyecto A, creas un entorno e instalas el tornillo 1.0. Para el Proyecto B, creas otro entorno separado con el tornillo 2.0. No hay conflictos. Para gestionarlos, usamos `venv` o `conda`. Esta práctica no es opcional, es el sello de un trabajo de ingeniería bien hecho."
+                },
+                {
+                    "title": "DIAPOSITIVA 10: VS Code y Jupyter",
+                    "script": "Con el taller montado, hablemos de las herramientas de trabajo. Primero, un buen editor de código. El estándar de la industria es Visual Studio Code. Es gratuito, potente y personalizable. Segundo, los notebooks interactivos, como Jupyter. Un notebook es un cuaderno de laboratorio digital. Te permite escribir código, ejecutarlo, ver el resultado inmediatamente y documentar tus hallazgos, todo en un mismo lugar. Es perfecto para la naturaleza exploratoria de la IA."
+                },
+                {
+                    "title": "DIAPOSITIVA 11: Google Colab",
+                    "script": "Muchos modelos de IA requieren una capacidad de cálculo brutal, con procesadores especializados (GPUs) que pueden ser muy caros. ¿Necesitamos invertir miles de euros? La respuesta es no, y la solución es la nube. Google Colab es un Jupyter Notebook en los servidores de Google que nos da acceso gratuito a GPUs de alto rendimiento. Democratiza por completo el acceso a la supercomputación."
+                },
+                {
+                    "title": "DIAPOSITIVA 12: Cursor y Conclusión",
+                    "script": "Finalmente, una herramienta que representa el espíritu de este canal: Cursor. Es un editor de código diseñado con la IA en su núcleo. Ofrece asistencia y sugerencias inteligentes, como tener un copiloto experto a tu lado. Así que aquí lo tenemos: entendemos por qué Python, hemos montado nuestro taller profesionalmente y conocemos nuestras herramientas de poder: VS Code, Jupyter, Colab y Cursor. Este es nuestro punto de partida. Con la base correcta, no hay límite a lo que podemos crear."
+                }
+            ];
+
+            function showSlide(index) {
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.remove('active');
+                }
+                currentSlide = index;
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.add('active');
+                }
+                counterElement.textContent = `${currentSlide + 1} / ${slides.length}`;
+                prevBtn.disabled = (currentSlide === 0);
+                nextBtn.disabled = (currentSlide === slides.length - 1);
+                
+                if (scriptPanel && scriptsBySlide[index]) {
+                    const { title, script } = scriptsBySlide[index];
+                    const scriptParagraphs = script.split('. ').map(p => p.trim()).filter(Boolean);
+                    
+                    let htmlContent = `<h2>${title}</h2>`;
+                    htmlContent += `<h3>Guion</h3>`;
+                    scriptParagraphs.forEach(p => {
+                        htmlContent += `<p>${p}.</p>`;
+                    });
+
+                    scriptPanel.innerHTML = htmlContent;
+                    scriptPanel.scrollTop = 0;
+                }
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' && !nextBtn.disabled) {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
+                    prevBtn.click();
+                }
+            });
+
+            showSlide(0);
+        });
+    </script>
+</body>
+</html>

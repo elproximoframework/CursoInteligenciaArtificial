@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación: ¿Qué es la Inteligencia Artificial?</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            background-color: #0c1421;
+            height: 100%;
+        }
+        .main-view {
+            display: flex;
+            height: 100vh;
+        }
+        .presentation-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        #script-panel {
+            width: 450px;
+            flex-shrink: 0;
+            background-color: #080f1a;
+            color: #e5e7eb;
+            border-left: 1px solid #1f2937;
+            overflow-y: auto;
+            padding: 2rem;
+            font-family: 'Roboto', sans-serif;
+        }
+        #script-panel h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #67e8f9; /* cyan-300 */
+            font-size: 1.5rem; /* text-2xl */
+            margin-bottom: 1rem;
+        }
+        #script-panel h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: #fde047; /* amber-300 */
+            font-size: 1.125rem; /* text-lg */
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        #script-panel p {
+            line-height: 1.625;
+            color: #d1d5db; /* gray-300 */
+            margin-bottom: 1rem;
+        }
+        .presentation-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+        }
+        .slide {
+            display: none;
+            width: 1280px; 
+            min-height: 720px; 
+            position: relative;
+            font-family: 'Roboto', sans-serif; 
+            color: white;
+            overflow: hidden;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            background: linear-gradient(135deg, #051937, #004d7a, #008793);
+        }
+        .slide.active {
+            display: flex;
+        }
+
+        .title { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .subtitle { font-family: 'Montserrat', sans-serif; font-weight: 600; }
+        .content-box { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .stars {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: -1;
+            background-image: radial-gradient(white, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
+            background-size: 150px 150px; opacity: 0.08;
+            animation: stars-move 60s linear infinite;
+        }
+        @keyframes stars-move {
+            from { background-position: 0 0; }
+            to { background-position: -1500px -1500px; }
+        }
+        .footer-note {
+            position: absolute; bottom: 1rem; right: 2rem; text-align: right;
+            font-size: 0.875rem; color: #9ca3af; z-index: 10;
+        }
+        #navigation-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+        }
+        #navigation-controls button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+        }
+        #navigation-controls button:hover:not(:disabled) { color: #67e8f9; transform: scale(1.1); }
+        #navigation-controls button:disabled { color: #4b5563; cursor: not-allowed; }
+        #slide-counter { color: white; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; }
+
+        /* --- ANIMACIONES GENERALES --- */
+        .active .fade-in-up { animation: fade-in-up-anim 0.8s ease-out forwards; opacity: 0; }
+        @keyframes fade-in-up-anim { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .active .fade-in { animation: fade-in-anim 1s ease-in forwards; opacity: 0; }
+        @keyframes fade-in-anim { from { opacity: 0; } to { opacity: 1; } }
+        .active .pop-in { animation: pop-in-anim 0.6s ease-out forwards; opacity: 0; transform: scale(0.5); }
+        @keyframes pop-in-anim { to { opacity: 1; transform: scale(1); } }
+        
+        /* --- ANIMACIONES ESPECÍFICAS --- */
+        .active .brain-circuit-anim i { animation: pulse-glow 2.5s infinite ease-in-out; }
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px #67e8f9); color: #67e8f9; }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 15px #fde047); color: #fde047; }
+        }
+        .active .data-funnel-item { animation: funnel-flow 3s ease-out infinite; opacity: 0; }
+        @keyframes funnel-flow {
+            0% { transform: translateY(-50px); opacity: 0; }
+            20%, 80% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(50px); opacity: 0; }
+        }
+        .active .turing-chat bubble { animation: pop-in-anim 0.5s ease-out forwards; opacity: 0; transform: scale(0.5); }
+
+        .active .matryoshka-base, .active .matryoshka-top { transition: transform 0.8s ease-in-out; }
+        .active .matryoshka-reveal .matryoshka-top { transform: translateY(-30px) scale(0.95); }
+        
+        .active .timeline-line { transform-origin: left; animation: grow-line 1s 0.5s ease-out forwards; transform: scaleX(0); }
+        @keyframes grow-line { to { transform: scaleX(1); } }
+        
+        .active .winter-to-spring-bg { animation: winter-spring-fade 2s 0.5s ease-in forwards; background: linear-gradient(90deg, #374151 50%, #374151 50%); }
+        @keyframes winter-spring-fade { to { background: linear-gradient(90deg, #374151 0%, #4ade80 100%); } }
+
+        #audio-player { position: fixed; bottom: 15px; left:20%; transform: translateX(-50%); width: 80%; max-width: 500px; z-index: 1000; opacity: 0.85; transition: opacity 0.3s; }
+        #audio-player:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="main-view">
+        <div class="presentation-wrapper">
+
+            <!-- ===== DIAPOSITIVA 1: ¿Qué es la IA? ===== -->
+            <div class="slide active">
+                <div class="stars"></div>
+                <div class="text-center">
+                    <div class="fade-in-up">
+                        <h2 class="subtitle text-4xl text-cyan-300">Más Allá de la Ciencia Ficción</h2>
+                        <h1 class="title text-6xl mt-2 text-white">¿Qué es la Inteligencia Artificial?</h1>
+                    </div>
+                    <div class="mt-16 w-full max-w-4xl flex justify-center items-center text-8xl relative brain-circuit-anim">
+                        <i class="fas fa-brain text-cyan-300" style="font-size: 10rem;"></i>
+                        <i class="fas fa-arrow-right-arrow-left text-4xl mx-8 pop-in" style="animation-delay: 0.5s;"></i>
+                        <i class="fas fa-microchip text-amber-300" style="font-size: 10rem; animation-delay: 1.5s;"></i>
+                    </div>
+                    <div class="mt-16 content-box rounded-lg p-6 max-w-5xl text-center fade-in-up" style="animation-delay: 1.2s;">
+                        <p class="text-xl">Es la misión de crear sistemas capaces de realizar tareas que, hasta ahora, requerían inteligencia humana: <span class="font-bold text-amber-300">aprender, razonar y resolver problemas.</span></p>
+                    </div>
+                </div>
+                <div class="footer-note">1 / 10<br>Introducción a la IA</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 2: ¿Cómo "Piensa"? ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Emulando el Razonamiento Humano</h1>
+                    <div class="flex justify-around items-center gap-8">
+                        <div class="flex flex-col items-center gap-4 w-1/3">
+                            <i class="fas fa-database text-8xl text-blue-300 pop-in" style="animation-delay: 0.5s;"></i>
+                             <div class="flex gap-4 text-3xl text-gray-400">
+                                <i class="fas fa-image data-funnel-item" style="animation-delay: 1s;"></i>
+                                <i class="fas fa-file-audio data-funnel-item" style="animation-delay: 1.3s;"></i>
+                                <i class="fas fa-file-alt data-funnel-item" style="animation-delay: 1.6s;"></i>
+                            </div>
+                            <h3 class="subtitle text-2xl mt-4 fade-in" style="animation-delay: 2s;">1. Devorar Datos Masivos</h3>
+                        </div>
+                        <div class="w-1/3 text-center">
+                           <i class="fas fa-magnifying-glass-chart text-9xl text-amber-300 brain-circuit-anim" style="animation-delay: 0.8s;"></i>
+                           <h3 class="subtitle text-2xl mt-4 fade-in" style="animation-delay: 2.2s;">2. Detectar Patrones</h3>
+                        </div>
+                        <div class="w-1/3 text-center">
+                            <i class="fas fa-lightbulb text-9xl text-green-300 pop-in" style="animation-delay: 1.1s;"></i>
+                             <h3 class="subtitle text-2xl mt-4 fade-in" style="animation-delay: 2.4s;">3. Tomar Decisiones</h3>
+                        </div>
+                    </div>
+                    <p class="mt-16 text-2xl max-w-4xl mx-auto fade-in-up" style="animation-delay: 2.8s;">
+                        No es "intuición", son <span class="text-cyan-300 font-bold">algoritmos y modelos matemáticos</span> que imitan nuestro proceso lógico a una escala y velocidad sobrehumanas.
+                    </p>
+                </div>
+                <div class="footer-note">2 / 10<br>El Proceso de la IA</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 3: El Test de Turing ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                 <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">La Pregunta Original de Alan Turing</h1>
+                    <h2 class="subtitle text-3xl text-amber-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">"¿Pueden pensar las máquinas?" (1950)</h2>
+                    <div class="flex justify-center items-center gap-12 text-center turing-chat">
+                        <div class="fade-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-user-secret text-9xl text-cyan-300"></i>
+                            <h3 class="subtitle text-2xl mt-4">Juez Humano</h3>
+                        </div>
+                        <div class="flex flex-col gap-4">
+                            <i class="fas fa-arrow-right text-4xl bubble" style="animation-delay: 1.2s;"></i>
+                            <i class="fas fa-arrow-left text-4xl bubble" style="animation-delay: 1.4s;"></i>
+                        </div>
+                        <div class="fade-in" style="animation-delay: 0.8s;">
+                            <i class="fas fa-question text-8xl text-gray-400"></i>
+                             <div class="flex gap-8 mt-6">
+                                <div>
+                                    <i class="fas fa-user text-6xl text-green-300"></i>
+                                    <p>¿Humano?</p>
+                                </div>
+                                <div>
+                                    <i class="fas fa-robot text-6xl text-yellow-300"></i>
+                                    <p>¿Máquina?</p>
+                                </div>
+                             </div>
+                        </div>
+                    </div>
+                     <div class="mt-12 content-box rounded-lg p-6 max-w-5xl text-center fade-in-up" style="animation-delay: 1.8s;">
+                        <p class="text-xl">El <span class="font-bold text-amber-300">Test de Turing</span> sentó las bases: si una máquina es indistinguible de un humano en una conversación, demuestra inteligencia.</p>
+                        <p class="text-xl mt-4">El objetivo no es reemplazar, sino <span class="font-bold text-cyan-300">aumentar nuestras capacidades</span>.</p>
+                    </div>
+                </div>
+                <div class="footer-note">3 / 10<br>El Test de Turing</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 4: La Jerarquía de la IA ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Las Matrioskas de la IA</h1>
+                    <h2 class="subtitle text-3xl text-yellow-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Una Jerarquía de Conceptos</h2>
+
+                    <div class="relative w-96 h-96 mx-auto pop-in" style="animation-delay: 0.5s;">
+                        <!-- Deep Learning -->
+                        <div class="absolute inset-28 flex items-center justify-center">
+                            <i class="fas fa-layer-group text-6xl text-red-400"></i>
+                        </div>
+                        <!-- Machine Learning -->
+                        <div class="absolute inset-16 border-4 border-dashed border-green-400 rounded-full flex items-center justify-center">
+                             <i class="fas fa-cogs text-8xl text-green-400 opacity-20"></i>
+                        </div>
+                        <!-- IA -->
+                        <div class="absolute inset-0 border-4 border-dashed border-cyan-400 rounded-full flex items-center justify-center">
+                             <i class="fas fa-brain text-9xl text-cyan-400 opacity-20"></i>
+                        </div>
+                    </div>
+                     <p class="mt-12 text-2xl max-w-4xl mx-auto fade-in-up" style="animation-delay: 1.5s;">
+                       Inteligencia Artificial, Machine Learning y Deep Learning no son lo mismo. Se contienen unos a otros, cada uno siendo un subconjunto del anterior.
+                    </p>
+                </div>
+                <div class="footer-note">4 / 10<br>Jerarquía de la IA</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 5: Inteligencia Artificial ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">1. Inteligencia Artificial (IA)</h1>
+                    <h2 class="subtitle text-3xl text-cyan-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">El Concepto General: La Muñeca Grande</h2>
+                    <div class="flex items-center justify-center gap-12">
+                        <i class="fas fa-brain text-9xl text-cyan-400 pop-in" style="animation-delay: 0.5s;"></i>
+                        <div class="text-left max-w-2xl content-box rounded-xl p-8">
+                            <h3 class="subtitle text-2xl mb-4 fade-in" style="animation-delay: 0.8s;">La Gran Idea</h3>
+                             <p class="text-xl fade-in" style="animation-delay: 1s;">Crear máquinas que <span class="font-bold text-cyan-300">simulen la inteligencia humana</span>.</p>
+                             <p class="text-xl mt-4 fade-in" style="animation-delay: 1.2s;">Abarca <span class="font-bold">todo</span>: desde la lógica más simple hasta las redes neuronales más complejas.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-note">5 / 10<br>IA: El Concepto General</div>
+            </div>
+            
+            <!-- ===== DIAPOSITIVA 6: Machine Learning ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">2. Machine Learning (ML)</h1>
+                    <h2 class="subtitle text-3xl text-green-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Aprender de la Experiencia</h2>
+                    <div class="flex items-center justify-around gap-8">
+                         <div class="text-center fade-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-images text-8xl text-gray-300"></i>
+                            <p class="mt-2 text-xl font-mono">"Fotos de gatos"</p>
+                         </div>
+                         <i class="fas fa-long-arrow-alt-right text-6xl text-white fade-in" style="animation-delay: 0.8s;"></i>
+                         <div class="text-center pop-in" style="animation-delay: 1.1s;">
+                            <i class="fas fa-cogs text-9xl text-green-300"></i>
+                            <p class="mt-2 text-xl font-bold">Algoritmo de ML</p>
+                         </div>
+                         <i class="fas fa-long-arrow-alt-right text-6xl text-white fade-in" style="animation-delay: 1.4s;"></i>
+                         <div class="content-box rounded-xl p-4 text-center fade-in" style="animation-delay: 1.7s;">
+                            <i class="fas fa-cat text-8xl text-amber-300"></i>
+                            <p class="mt-2 text-xl font-mono">Reconoce "Gato"</p>
+                         </div>
+                    </div>
+                    <p class="mt-16 text-2xl max-w-4xl mx-auto fade-in-up" style="animation-delay: 2s;">
+                        Los sistemas <span class="font-bold text-green-300">aprenden de los datos</span> sin ser programados explícitamente para cada regla. El algoritmo encuentra los patrones por sí mismo.
+                    </p>
+                </div>
+                <div class="footer-note">6 / 10<br>Machine Learning</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 7: Deep Learning ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">3. Deep Learning (DL)</h1>
+                    <h2 class="subtitle text-3xl text-red-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">La Joya de la Corona: Redes Neuronales Profundas</h2>
+                    <div class="flex items-center justify-around gap-8">
+                        <i class="fas fa-brain text-8xl text-cyan-400 pop-in" style="animation-delay: 0.5s;"></i>
+                        <div class="text-left content-box rounded-xl p-8 max-w-3xl">
+                             <h3 class="subtitle text-2xl mb-4 fade-in" style="animation-delay: 0.8s;">¿Qué lo hace "Profundo"?</h3>
+                             <p class="text-xl fade-in" style="animation-delay: 1s;">Utiliza Redes Neuronales con <span class="font-bold text-red-300">muchas capas</span> (>3), inspiradas en la estructura de nuestro cerebro.</p>
+                             <p class="text-xl mt-4 fade-in" style="animation-delay: 1.2s;">Es más <span class="font-bold">autónomo</span>: descubre las características relevantes por sí mismo, ideal para datos no estructurados como imágenes, sonido o texto.</p>
+                        </div>
+                    </div>
+                     <div class="mt-12 text-center fade-in" style="animation-delay: 1.5s;">
+                         <i class="fas fa-sitemap fa-rotate-270 text-9xl text-red-300"></i>
+                     </div>
+                </div>
+                <div class="footer-note">7 / 10<br>Deep Learning</div>
+            </div>
+            
+             <!-- ===== DIAPOSITIVA 8: Orígenes ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 text-center fade-in-up">Los Orígenes: La Semilla de una Idea</h1>
+                    <div class="relative w-full">
+                        <!-- Timeline Line -->
+                        <div class="h-1 bg-cyan-300/50 rounded-full timeline-line"></div>
+                        <!-- Timeline Items -->
+                        <div class="absolute w-full top-0 flex justify-between -mt-4">
+                            <div class="text-center pop-in" style="animation-delay: 1.2s;">
+                                <i class="fas fa-scroll text-6xl text-amber-300"></i>
+                                <h3 class="font-bold text-xl mt-2">1930s</h3>
+                                <p>Máquina de Turing</p>
+                            </div>
+                            <div class="text-center pop-in" style="animation-delay: 1.5s;">
+                                <i class="fas fa-circle-nodes text-6xl text-amber-300"></i>
+                                <h3 class="font-bold text-xl mt-2">1943</h3>
+                                <p>1ª Neurona Artificial</p>
+                            </div>
+                             <div class="text-center pop-in" style="animation-delay: 1.8s;">
+                                <i class="fas fa-users text-6xl text-amber-300"></i>
+                                <h3 class="font-bold text-xl mt-2">1956</h3>
+                                <p>Conf. de Dartmouth<br>(Nace el término "IA")</p>
+                            </div>
+                             <div class="text-center pop-in" style="animation-delay: 2.1s;">
+                                <i class="fab fa-dev text-6xl text-amber-300"></i>
+                                <h3 class="font-bold text-xl mt-2">1960s</h3>
+                                <p>Lenguaje LISP</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-2xl mt-32 text-center fade-in-up" style="animation-delay: 2.5s;">
+                        Un viaje de casi un siglo de sueños, fracasos y avances espectaculares que sentaron las bases teóricas de la computación moderna.
+                    </p>
+                </div>
+                <div class="footer-note">8 / 10<br>Historia: Los Orígenes</div>
+            </div>
+
+             <!-- ===== DIAPOSITIVA 9: Invierno y Renacimiento ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                 <div class="w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 text-center fade-in-up">Invierno y Renacimiento</h1>
+                    <div class="grid grid-cols-2 gap-8 text-center">
+                        <!-- Invierno -->
+                        <div class="content-box rounded-xl p-8 border-2 border-blue-300 fade-in-up" style="animation-delay: 0.5s;">
+                             <h2 class="title text-4xl text-blue-300">El "Invierno de la IA"</h2>
+                             <p class="text-2xl my-4 font-bold">Años 70</p>
+                             <i class="fas fa-snowflake text-8xl text-blue-300 my-6"></i>
+                             <p class="text-xl">Las promesas eran enormes, pero los ordenadores eran <span class="font-bold">limitados</span>.</p>
+                             <p class="text-xl mt-2">La financiación se evaporó y el progreso se <span class="font-bold">estancó</span>.</p>
+                        </div>
+                        <!-- Renacimiento -->
+                         <div class="content-box rounded-xl p-8 border-2 border-yellow-300 fade-in-up" style="animation-delay: 0.8s;">
+                             <h2 class="title text-4xl text-yellow-300">El Resurgimiento</h2>
+                             <p class="text-2xl my-4 font-bold">Años 80</p>
+                              <i class="fas fa-sun text-8xl text-yellow-300 my-6"></i>
+                              <p class="text-xl">Nacen los <span class="font-bold">"Sistemas Expertos"</span> para imitar a especialistas humanos.</p>
+                              <p class="text-xl mt-2">El algoritmo de <span class="font-bold">retropropagación</span> impulsa las redes neuronales.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-note">9 / 10<br>Historia: Invierno y Renacimiento</div>
+            </div>
+
+             <!-- ===== DIAPOSITIVA 10: Era Moderna ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">La Era Moderna: El Big Bang de la IA</h1>
+                    <div class="grid grid-cols-3 gap-8 items-center">
+                        <div class="text-center fade-in-up" style="animation-delay: 0.5s;">
+                            <i class="fas fa-microchip text-8xl text-green-300"></i>
+                            <h3 class="subtitle text-2xl mt-4">Más Potencia de Cálculo</h3>
+                        </div>
+                         <div class="text-center fade-in-up" style="animation-delay: 0.8s;">
+                            <i class="fas fa-globe text-8xl text-blue-300"></i>
+                            <h3 class="subtitle text-2xl mt-4">Datos Masivos (Internet)</h3>
+                        </div>
+                         <div class="text-center fade-in-up" style="animation-delay: 1.1s;">
+                            <i class="fas fa-brain text-8xl text-pink-300"></i>
+                            <h3 class="subtitle text-2xl mt-4">Algoritmos Mejorados</h3>
+                        </div>
+                    </div>
+                     <div class="mt-16 content-box rounded-xl p-8 pop-in" style="animation-delay: 1.5s;">
+                        <h2 class="subtitle text-3xl text-amber-300">Momento Clave: 1997</h2>
+                        <div class="flex justify-center items-center gap-12 mt-6">
+                             <div class="text-center">
+                                 <i class="fas fa-robot text-7xl text-cyan-300"></i>
+                                 <p class="text-xl font-bold mt-2">Deep Blue (IBM)</p>
+                             </div>
+                             <h3 class="title text-4xl">VS</h3>
+                             <div class="text-center">
+                                 <i class="fas fa-chess-king text-7xl text-white"></i>
+                                 <p class="text-xl font-bold mt-2">Garry Kasparov</p>
+                             </div>
+                        </div>
+                         <p class="text-2xl mt-6">Por primera vez, una máquina derrota al campeón mundial de ajedrez. <span class="font-bold">La IA llega al escenario mundial.</span></p>
+                    </div>
+                </div>
+                <div class="footer-note">10 / 10<br>Historia: Era Moderna</div>
+            </div>
+
+        </div>
+
+        <div id="script-panel">
+            <!-- El guion se cargará aquí -->
+        </div>
+    </div>
+
+    <!-- ===== CONTROLES DE NAVEGACIÓN Y AUDIO ===== -->
+    <div id="navigation-controls">
+        <button id="prev-btn" title="Anterior"><i class="fas fa-arrow-left"></i></button>
+        <span id="slide-counter">1 / 10</span>
+        <button id="next-btn" title="Siguiente"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    <audio id="audio-player" controls>
+        <source src="1.wav" type="audio/wav">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const counterElement = document.getElementById('slide-counter');
+            const scriptPanel = document.getElementById('script-panel');
+            let currentSlide = 0;
+
+            const scriptsBySlide = [
+                {
+                    "title": "DIAPOSITIVA 1: ¿Qué es la Inteligencia Artificial?",
+                    "script": "Vivimos rodeados por el término 'Inteligencia Artificial'. Está en nuestros teléfonos, en nuestros coches, en las noticias... pero, ¿qué es realmente? Si quitamos toda la ciencia ficción, nos queda una de las ramas más fascinantes de la informática. Su misión, en esencia, es crear sistemas que puedan hacer cosas que, hasta ahora, requerían inteligencia humana. Hablamos de aprender, de razonar, de resolver problemas, incluso de comprender el lenguaje."
+                },
+                {
+                    "title": "DIAPOSITIVA 2: ¿Cómo 'Piensa' la IA?",
+                    "script": "La idea central es emular nuestras funciones cognitivas. Un sistema de IA no tiene 'intuición' en el sentido humano. Lo que tiene son algoritmos increíblemente sofisticados y modelos matemáticos que le permiten devorar cantidades masivas de datos, detectar patrones que un humano tardaría siglos en encontrar, y tomar decisiones basadas en ese análisis. Es como si imitara el proceso lógico de nuestro propio razonamiento, pero a una escala y velocidad sobrehumanas."
+                },
+                {
+                    "title": "DIAPOSITIVA 3: El Test de Turing y el Propósito",
+                    "script": "Ya en 1950, Alan Turing se planteó: '¿Pueden pensar las máquinas?'. Ideó lo que hoy conocemos como el 'Test de Turing'. La idea era simple pero profunda: si una persona mantiene una conversación con una máquina y no puede distinguir si está hablando con un humano o con un programa, entonces esa máquina ha demostrado un comportamiento inteligente. Y es crucial entender que el objetivo final no es reemplazarnos, sino aumentar nuestras capacidades. La IA es una herramienta para potenciar lo que ya somos capaces de hacer."
+                },
+                {
+                    "title": "DIAPOSITIVA 4: La Jerarquía de la IA",
+                    "script": "Aquí es donde el lenguaje se vuelve un poco confuso. Escuchamos hablar de Inteligencia Artificial, de Machine Learning, de Deep Learning... y a menudo se usan como si fueran lo mismo. No lo son. La mejor forma de entender su relación es imaginar una de esas muñecas rusas, una dentro de la otra."
+                },
+                {
+                    "title": "DIAPOSITIVA 5: Inteligencia Artificial (IA)",
+                    "script": "La muñeca más grande, la que contiene a todas las demás, es la Inteligencia Artificial. Es el concepto general, la gran idea de crear máquinas que simulen la inteligencia humana. Abarca todo, desde la lógica más simple hasta las redes más complejas."
+                },
+                 {
+                    "title": "DIAPOSITIVA 6: Machine Learning (ML)",
+                    "script": "Dentro de la IA, encontramos el Machine Learning o Aprendizaje Automático. Este es un subconjunto de la IA. Y aquí está la clave: el Machine Learning da a los sistemas la capacidad de aprender de la experiencia, de los datos, sin que un ingeniero tenga que programar explícitamente cada una de las reglas. En lugar de decirle a un programa las reglas para identificar un gato, le muestras miles de fotos de gatos, y el algoritmo aprende por sí mismo a identificar los patrones."
+                },
+                {
+                    "title": "DIAPOSITIVA 7: Redes Neuronales y Deep Learning (DL)",
+                    "script": "Dentro del Machine Learning, encontramos otra pieza: las Redes Neuronales, inspiradas en nuestro cerebro. Y en su interior, está la joya de la corona actual: el Deep Learning o Aprendizaje Profundo. El Deep Learning es una forma especializada de Machine Learning que utiliza redes neuronales con muchísimas capas (por eso se llama 'profundo'). La gran diferencia es que el Deep Learning es mucho más autónomo. Puede trabajar con datos no estructurados, como imágenes o sonido, y descubrir los patrones relevantes por sí mismo."
+                },
+                {
+                    "title": "DIAPOSITIVA 8: Los Orígenes (Años 30-50)",
+                    "script": "Este viaje no empezó ayer. Las semillas se plantaron en los años 30, con Alan Turing y su 'Máquina de Turing'. Luego, en 1943, se propuso el primer modelo matemático de una neurona artificial. El pistoletazo de salida oficial fue en 1956 en la Conferencia de Dartmouth. Allí, John McCarthy acuñó por primera vez el término 'inteligencia artificial'. El optimismo era desbordante, y en los 60 McCarthy desarrolló LISP, un lenguaje de programación para la IA."
+                },
+                {
+                    "title": "DIAPOSITIVA 9: Invierno y Renacimiento (Años 70-80)",
+                    "script": "Sin embargo, la realidad se impuso. Las promesas eran enormes, pero los ordenadores de la época eran increíblemente limitados. Esto llevó a lo que se conoce como el 'primer invierno de la IA' en los años 70. La financiación se evaporó y el progreso se estancó. Pero la idea resurgió en los años 80 con los 'sistemas expertos', programas que imitaban a un experto humano en un campo concreto. Al mismo tiempo, las redes neuronales recibieron un impulso vital con la invención del algoritmo de retropropagación."
+                },
+                {
+                    "title": "DIAPOSITIVA 10: La Era Moderna y Deep Blue",
+                    "script": "El verdadero renacimiento comenzó en los 90. Dos factores fueron clave: un aumento exponencial en la potencia de cálculo y, gracias a internet, la disponibilidad de cantidades masivas de datos. De repente, las técnicas de Machine Learning se podían poner en práctica a gran escala. Y entonces llegó el momento que lo cambió todo. En 1997, la supercomputadora Deep Blue de IBM se enfrentó al campeón del mundo de ajedrez, Garry Kasparov. Y le ganó. La IA había llegado al escenario mundial."
+                }
+            ];
+
+            function showSlide(index) {
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.remove('active');
+                }
+                currentSlide = index;
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.add('active');
+                }
+                counterElement.textContent = `${currentSlide + 1} / ${slides.length}`;
+                prevBtn.disabled = (currentSlide === 0);
+                nextBtn.disabled = (currentSlide === slides.length - 1);
+                
+                if (scriptPanel && scriptsBySlide[index]) {
+                    const { title, script } = scriptsBySlide[index];
+                    const scriptParagraphs = script.split('. ').map(p => p.replace(/\n/g, ' ').trim()).filter(Boolean);
+                    
+                    let htmlContent = `<h2>${title}</h2>`;
+                    htmlContent += `<h3>Guion</h3>`;
+                    scriptParagraphs.forEach(p => {
+                        htmlContent += `<p>${p}.</p>`;
+                    });
+
+                    scriptPanel.innerHTML = htmlContent;
+                }
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' && !nextBtn.disabled) {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
+                    prevBtn.click();
+                }
+            });
+
+            showSlide(0);
+        });
+    </script>
+</body>
+</html>

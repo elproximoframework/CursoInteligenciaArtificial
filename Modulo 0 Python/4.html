@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación: El Flujo de Trabajo de Scikit-Learn</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            background-color: #0c1421;
+            height: 100%;
+        }
+        .main-view {
+            display: flex;
+            height: 100vh;
+        }
+        .presentation-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        #script-panel {
+            width: 450px;
+            flex-shrink: 0;
+            background-color: #080f1a;
+            color: #e5e7eb;
+            border-left: 1px solid #1f2937;
+            overflow-y: auto;
+            padding: 2rem;
+            font-family: 'Roboto', sans-serif;
+        }
+        #script-panel h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #67e8f9; /* cyan-300 */
+            font-size: 1.5rem; /* text-2xl */
+            margin-bottom: 1rem;
+        }
+        #script-panel h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: #fde047; /* amber-300 */
+            font-size: 1.125rem; /* text-lg */
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        #script-panel p {
+            line-height: 1.625;
+            color: #d1d5db; /* gray-300 */
+            margin-bottom: 1rem;
+        }
+        .slide {
+            display: none;
+            width: 1280px; 
+            min-height: 720px; 
+            position: relative;
+            font-family: 'Roboto', sans-serif; 
+            color: white;
+            overflow: hidden;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            background: linear-gradient(135deg, #051937, #004d7a, #008793);
+        }
+        .slide.active {
+            display: flex;
+        }
+
+        .title { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .subtitle { font-family: 'Montserrat', sans-serif; font-weight: 600; }
+        .content-box { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .stars {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: -1;
+            background-image: radial-gradient(white, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
+            background-size: 150px 150px; opacity: 0.08;
+            animation: stars-move 60s linear infinite;
+        }
+        @keyframes stars-move {
+            from { background-position: 0 0; }
+            to { background-position: -1500px -1500px; }
+        }
+        .footer-note {
+            position: absolute; bottom: 1rem; right: 2rem; text-align: right;
+            font-size: 0.875rem; color: #9ca3af; z-index: 10;
+        }
+        #navigation-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+        }
+        #navigation-controls button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+        }
+        #navigation-controls button:hover:not(:disabled) { color: #67e8f9; transform: scale(1.1); }
+        #navigation-controls button:disabled { color: #4b5563; cursor: not-allowed; }
+        #slide-counter { color: white; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; }
+
+        /* --- ANIMACIONES GENERALES --- */
+        .active .fade-in-up { animation: fade-in-up-anim 0.8s ease-out forwards; opacity: 0; }
+        @keyframes fade-in-up-anim { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .active .fade-in { animation: fade-in-anim 1s ease-in forwards; opacity: 0; }
+        @keyframes fade-in-anim { from { opacity: 0; } to { opacity: 1; } }
+        .active .pop-in { animation: pop-in-anim 0.6s ease-out forwards; opacity: 0; transform: scale(0.5); }
+        @keyframes pop-in-anim { to { opacity: 1; transform: scale(1); } }
+        .active .grow-width { animation: grow-width-anim 1s ease-out forwards; transform-origin: left; transform: scaleX(0); }
+        @keyframes grow-width-anim { to { transform: scaleX(1); } }
+        .active .pulse-icon { animation: pulse-icon-anim 2s infinite ease-in-out; }
+        @keyframes pulse-icon-anim { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+        #audio-player { position: fixed; bottom: 15px; left:20%; transform: translateX(-50%); width: 80%; max-width: 500px; z-index: 1000; opacity: 0.85; transition: opacity 0.3s; }
+        #audio-player:hover { opacity: 1; }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-view">
+        <div class="presentation-wrapper">
+
+            <!-- ===== DIAPOSITIVA 1: Introducción a Scikit-Learn ===== -->
+            <div class="slide active">
+                <div class="stars"></div>
+                <div class="text-center">
+                    <div class="fade-in-up">
+                        <h2 class="subtitle text-4xl text-cyan-300">Introducción al Machine Learning Práctico</h2>
+                        <h1 class="title text-6xl mt-2 text-white">Scikit-Learn: La Navaja Suiza Definitiva</h1>
+                    </div>
+                    <div class="mt-16 w-full max-w-4xl flex justify-center items-center text-8xl relative">
+                        <i class="fas fa-toolbox text-amber-300 pop-in" style="font-size: 10rem; filter: drop-shadow(0 0 20px #fde047);"></i>
+                        <i class="fas fa-brain text-cyan-200 absolute pop-in" style="font-size: 5rem; animation-delay: 0.3s;"></i>
+                    </div>
+                    <div class="mt-16 content-box rounded-lg p-6 max-w-5xl text-center fade-in-up" style="animation-delay: 0.8s;">
+                        <p class="text-xl">Una biblioteca para Python que da acceso a docenas de algoritmos listos para usar con una simplicidad y coherencia asombrosas.</p>
+                    </div>
+                </div>
+                <div class="footer-note">1 / 12<br>Introducción</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 2: El Flujo de Trabajo Universal ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">La Receta Universal del Machine Learning</h1>
+                    <div class="flex items-center justify-center w-full gap-2">
+                        <div class="text-center pop-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-database text-5xl text-cyan-300"></i><p class="mt-2 text-sm">Datos</p>
+                        </div>
+                        <i class="fas fa-arrow-right text-4xl text-gray-400 pop-in" style="animation-delay: 0.7s;"></i>
+                        <div class="text-center pop-in" style="animation-delay: 0.9s;">
+                            <i class="fas fa-wand-magic-sparkles text-5xl text-green-300"></i><p class="mt-2 text-sm">Preproceso</p>
+                        </div>
+                        <i class="fas fa-arrow-right text-4xl text-gray-400 pop-in" style="animation-delay: 1.1s;"></i>
+                        <div class="text-center pop-in" style="animation-delay: 1.3s;">
+                            <i class="fas fa-object-ungroup text-5xl text-amber-300"></i><p class="mt-2 text-sm">División</p>
+                        </div>
+                        <i class="fas fa-arrow-right text-4xl text-gray-400 pop-in" style="animation-delay: 1.5s;"></i>
+                        <div class="text-center pop-in" style="animation-delay: 1.7s;">
+                            <i class="fas fa-cogs text-5xl text-blue-300"></i><p class="mt-2 text-sm">Entrenamiento</p>
+                        </div>
+                        <i class="fas fa-arrow-right text-4xl text-gray-400 pop-in" style="animation-delay: 1.9s;"></i>
+                         <div class="text-center pop-in" style="animation-delay: 2.1s;">
+                            <i class="fas fa-clipboard-check text-5xl text-purple-300"></i><p class="mt-2 text-sm">Evaluación</p>
+                        </div>
+                        <i class="fas fa-arrow-right text-4xl text-gray-400 pop-in" style="animation-delay: 2.3s;"></i>
+                        <div class="text-center pop-in" style="animation-delay: 2.5s;">
+                            <i class="fas fa-sliders-h text-5xl text-pink-300"></i><p class="mt-2 text-sm">Optimización</p>
+                        </div>
+                    </div>
+                    <div class="mt-16 content-box rounded-lg p-6 max-w-5xl text-center fade-in-up" style="animation-delay: 2.8s;">
+                        <p class="text-2xl">Un "framework" mental que, una vez dominado, permite experimentar con distintos modelos con una facilidad pasmosa.</p>
+                    </div>
+                </div>
+                <div class="footer-note">2 / 12<br>El Flujo de Trabajo</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 3: Preprocesamiento (Parte 1) ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl text-center">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Paso 1: Preprocesamiento</h1>
+                    <h2 class="subtitle text-3xl text-green-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Limpiar, Pelar y Cortar los Ingredientes Crudos</h2>
+                    <div class="flex items-center justify-around gap-8">
+                        <div class="text-center pop-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-table text-9xl text-gray-400"></i>
+                            <h3 class="font-bold mt-4 text-xl">Datos Crudos</h3>
+                            <p>"5 habs", 250m², "Madrid"</p>
+                        </div>
+                        <div class="fade-in" style="animation-delay: 1.0s;">
+                            <i class="fas fa-arrow-right-long text-7xl text-green-300"></i>
+                        </div>
+                        <div class="text-center pop-in" style="animation-delay: 1.5s;">
+                            <i class="fas fa-table-list text-9xl text-cyan-300"></i>
+                             <h3 class="font-bold mt-4 text-xl">Datos Listos</h3>
+                            <p>0.8, 1.2, [1, 0, 0]</p>
+                        </div>
+                    </div>
+                    <p class="mt-16 text-2xl max-w-5xl mx-auto fade-in-up" style="animation-delay: 2s;">
+                        Los datos casi nunca vienen listos para ser consumidos por un algoritmo. Debemos transformarlos en un formato numérico, limpio y consistente.
+                    </p>
+                </div>
+                <div class="footer-note">3 / 12<br>Preprocesamiento</div>
+            </div>
+            
+            <!-- ===== DIAPOSITIVA 4: Escalado de Características ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl text-center">
+                    <h2 class="subtitle text-3xl text-green-300 mb-2 fade-in-up">Preprocesamiento</h2>
+                    <h1 class="title text-5xl mb-12 fade-in-up" style="animation-delay: 0.2s;">A: Escalado de Características</h1>
+                    <div class="flex items-end justify-center gap-16">
+                        <div class="text-center fade-in-up" style="animation-delay: 0.5s;">
+                            <p class="font-bold">Habitaciones (1-5)</p>
+                            <div class="h-12 w-16 bg-red-400 rounded-t-lg mx-auto mt-2"></div>
+                        </div>
+                         <div class="text-center fade-in-up" style="animation-delay: 0.7s;">
+                            <p class="font-bold">Superficie (50-300)</p>
+                            <div class="h-64 w-16 bg-red-400 rounded-t-lg mx-auto mt-2"></div>
+                        </div>
+                        <div class="fade-in" style="animation-delay: 1.2s;">
+                            <i class="fas fa-arrow-right-long text-6xl text-green-300"></i>
+                            <p class="font-mono text-sm mt-2">StandardScaler</p>
+                        </div>
+                         <div class="text-center fade-in-up" style="animation-delay: 1.7s;">
+                            <p class="font-bold">Habitaciones (Escalado)</p>
+                            <div class="h-48 w-16 bg-cyan-400 rounded-t-lg mx-auto mt-2"></div>
+                        </div>
+                         <div class="text-center fade-in-up" style="animation-delay: 1.9s;">
+                            <p class="font-bold">Superficie (Escalado)</p>
+                            <div class="h-48 w-16 bg-cyan-400 rounded-t-lg mx-auto mt-2"></div>
+                        </div>
+                    </div>
+                    <p class="mt-12 text-2xl max-w-5xl mx-auto fade-in-up" style="animation-delay: 2.2s;">
+                        Evita que las características con valores numéricos grandes dominen el modelo. <span class="font-bold text-green-300">Todas compiten en igualdad de condiciones.</span>
+                    </p>
+                </div>
+                <div class="footer-note">4 / 12<br>Preprocesamiento: Escalado</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 5: Codificación Categórica ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl text-center">
+                    <h2 class="subtitle text-3xl text-green-300 mb-2 fade-in-up">Preprocesamiento</h2>
+                    <h1 class="title text-5xl mb-12 fade-in-up" style="animation-delay: 0.2s;">B: Codificación de Variables Categóricas</h1>
+                    <div class="w-full max-w-4xl mx-auto content-box rounded-xl p-8">
+                        <div class="flex items-center justify-around gap-8">
+                            <div class="text-center pop-in" style="animation-delay: 0.5s;">
+                                <i class="fas fa-tag text-6xl text-amber-300"></i>
+                                <p class="font-mono text-2xl mt-4">"Madrid"</p>
+                            </div>
+                            <div class="fade-in" style="animation-delay: 1.0s;">
+                                <i class="fas fa-arrow-right-long text-6xl text-green-300"></i>
+                                <p class="font-mono text-sm mt-2">OneHotEncoder</p>
+                            </div>
+                             <div class="text-center pop-in" style="animation-delay: 1.5s;">
+                                <i class="fas fa-hashtag text-6xl text-cyan-300"></i>
+                                <p class="font-mono text-2xl mt-4">[1, 0, 0]</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mt-12 text-2xl max-w-5xl mx-auto fade-in-up" style="animation-delay: 2.0s;">
+                        Los modelos matemáticos necesitan números, no palabras. <span class="font-bold text-green-300">Convertimos categorías en representaciones numéricas</span> sin crear falsas relaciones de orden.
+                    </p>
+                </div>
+                <div class="footer-note">5 / 12<br>Preprocesamiento: Codificación</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 6: División de Datos ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Paso 2: División de los Datos</h1>
+                    <h2 class="subtitle text-3xl text-amber-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Creando Nuestro Examen Final Secreto</h2>
+                    <div class="flex items-center justify-center gap-8">
+                        <div class="text-center pop-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-table text-9xl text-cyan-300"></i>
+                            <h3 class="font-bold mt-2">Datos Completos</h3>
+                        </div>
+                        <div class="text-center grow-width" style="animation-delay: 0.8s;">
+                            <div class="h-2 w-full bg-amber-300"></div>
+                            <p class="font-mono mt-2">train_test_split</p>
+                        </div>
+                        <div class="flex flex-col gap-4">
+                            <div class="content-box rounded-lg p-4 text-center pop-in" style="animation-delay: 1.5s;">
+                                <i class="fas fa-book-open-reader text-5xl text-green-300"></i>
+                                <h3 class="font-bold mt-2">Train Set (80%)</h3>
+                                <p>Para que el modelo aprenda.</p>
+                            </div>
+                            <div class="content-box rounded-lg p-4 text-center pop-in" style="animation-delay: 1.8s;">
+                                <i class="fas fa-file-signature text-5xl text-red-300"></i>
+                                <h3 class="font-bold mt-2">Test Set (20%)</h3>
+                                <p>Para evaluar de forma honesta.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mt-12 text-2xl max-w-5xl mx-auto fade-in-up" style="animation-delay: 2.2s;">
+                        Si entrenamos y evaluamos con los mismos datos, el modelo "memoriza" las respuestas. <span class="font-bold text-amber-300">Necesitamos datos que nunca haya visto para saber si realmente ha aprendido a generalizar.</span>
+                    </p>
+                </div>
+                <div class="footer-note">6 / 12<br>División de Datos</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 7: Tipos de Problemas ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                 <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Paso 3: Selección y Entrenamiento del Modelo</h1>
+                    <div class="grid grid-cols-3 gap-8">
+                        <div class="content-box rounded-xl p-6 pop-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-chart-line text-6xl text-cyan-300 mb-4"></i>
+                            <h3 class="title text-3xl">Regresión</h3>
+                            <p class="mt-2 text-lg">Predecir un valor numérico continuo. (Ej: Precio, Temperatura)</p>
+                        </div>
+                        <div class="content-box rounded-xl p-6 pop-in" style="animation-delay: 0.8s;">
+                            <i class="fas fa-tags text-6xl text-amber-300 mb-4"></i>
+                            <h3 class="title text-3xl">Clasificación</h3>
+                            <p class="mt-2 text-lg">Predecir una categoría. (Ej: Spam/No Spam, Cliente Fuga/No Fuga)</p>
+                        </div>
+                        <div class="content-box rounded-xl p-6 pop-in" style="animation-delay: 1.1s;">
+                            <i class="fas fa-project-diagram text-6xl text-green-300 mb-4"></i>
+                            <h3 class="title text-3xl">Clustering</h3>
+                            <p class="mt-2 text-lg">Encontrar grupos ocultos en los datos. (Ej: Segmentación de Clientes)</p>
+                        </div>
+                    </div>
+                     <p class="mt-16 text-2xl max-w-5xl mx-auto fade-in-up" style="animation-delay: 1.5s;">
+                        El primer paso es entender <span class="font-bold text-cyan-300">qué tipo de pregunta</span> queremos responder con nuestros datos.
+                    </p>
+                </div>
+                <div class="footer-note">7 / 12<br>Tipos de Problemas</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 8: API Unificada ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">La Magia de la Coherencia</h1>
+                    <h2 class="subtitle text-3xl text-cyan-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">La API Unificada de Scikit-Learn</h2>
+                    <div class="grid grid-cols-2 gap-8 w-full">
+                        <div class="content-box rounded-xl p-8 text-left fade-in-up" style="animation-delay: 0.5s;">
+                             <div class="flex items-center gap-4 mb-4">
+                                <i class="fas fa-brain text-5xl text-green-300"></i>
+                                <div>
+                                    <h3 class="font-mono text-3xl">.fit()</h3>
+                                    <p class="text-xl">El proceso de aprendizaje.</p>
+                                </div>
+                            </div>
+                            <pre class="bg-black/30 rounded p-4"><code class="language-python">modelo.fit(X_train, y_train)</code></pre>
+                            <p class="mt-4 text-lg">Le pasamos los datos de entrenamiento y sus etiquetas para que el modelo aprenda los patrones.</p>
+                        </div>
+                         <div class="content-box rounded-xl p-8 text-left fade-in-up" style="animation-delay: 0.8s;">
+                             <div class="flex items-center gap-4 mb-4">
+                                <i class="fas fa-lightbulb text-5xl text-amber-300"></i>
+                                <div>
+                                    <h3 class="font-mono text-3xl">.predict()</h3>
+                                    <p class="text-xl">El momento de la verdad.</p>
+                                </div>
+                            </div>
+                            <pre class="bg-black/30 rounded p-4"><code class="language-python">predicciones = modelo.predict(X_test)</code></pre>
+                            <p class="mt-4 text-lg">Usamos el modelo ya entrenado sobre datos nuevos (el Test Set) para obtener sus predicciones.</p>
+                        </div>
+                    </div>
+                    <p class="mt-12 text-2xl max-w-5xl mx-auto fade-in" style="animation-delay: 1.2s;">
+                        Sin importar si es una Regresión Lineal o un Random Forest, la forma de usarlos es <span class="font-bold text-cyan-300">idéntica</span>. Esto fomenta la experimentación rápida.
+                    </p>
+                </div>
+                <div class="footer-note">8 / 12<br>API Unificada: fit/predict</div>
+            </div>
+            
+            <!-- ===== DIAPOSITIVA 9: Evaluación Clasificación ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Paso 4: Evaluación del Modelo</h1>
+                    <h2 class="subtitle text-3xl text-purple-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Métricas para Clasificación</h2>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="content-box rounded-xl p-4 pop-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-percentage text-5xl text-cyan-300 mb-3"></i>
+                            <h3 class="font-bold text-xl">Accuracy</h3><p>¿Qué % acertó?</p>
+                        </div>
+                        <div class="content-box rounded-xl p-4 pop-in" style="animation-delay: 0.7s;">
+                            <i class="fas fa-crosshairs text-5xl text-green-300 mb-3"></i>
+                            <h3 class="font-bold text-xl">Precision</h3><p>De los que predijo +, ¿cuántos acertó?</p>
+                        </div>
+                        <div class="content-box rounded-xl p-4 pop-in" style="animation-delay: 0.9s;">
+                            <i class="fas fa-bullseye text-5xl text-amber-300 mb-3"></i>
+                            <h3 class="font-bold text-xl">Recall</h3><p>De los que eran +, ¿cuántos encontró?</p>
+                        </div>
+                        <div class="content-box rounded-xl p-4 pop-in" style="animation-delay: 1.1s;">
+                            <i class="fas fa-table-cells text-5xl text-red-300 mb-3"></i>
+                            <h3 class="font-bold text-xl">Matriz de Confusión</h3><p>El mapa completo de aciertos y errores.</p>
+                        </div>
+                    </div>
+                    <div class="mt-12 content-box rounded-xl p-6 fade-in-up" style="animation-delay: 1.5s;">
+                        <p class="text-xl"><i class="fas fa-triangle-exclamation text-yellow-300"></i> Cuidado con el <span class="font-bold">Accuracy</span> en datos desbalanceados. Un modelo que siempre predice "no" para una enfermedad rara (1% de casos) tendrá 99% de accuracy, pero será inútil.</p>
+                    </div>
+                </div>
+                <div class="footer-note">9 / 12<br>Evaluación: Clasificación</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 10: Evaluación Regresión ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Paso 4: Evaluación del Modelo</h1>
+                    <h2 class="subtitle text-3xl text-purple-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Métricas para Regresión</h2>
+                     <div class="flex justify-center gap-12">
+                        <div class="content-box rounded-xl p-8 w-1/2 pop-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-arrows-left-right-to-line text-6xl text-cyan-300 mb-4"></i>
+                            <h3 class="title text-3xl">Error Cuadrático Medio (MSE)</h3>
+                            <p class="mt-2 text-lg">Nos da una idea de cuán lejos, en promedio, están nuestras predicciones de los valores reales. <span class="font-bold">Cuanto más bajo, mejor.</span></p>
+                        </div>
+                         <div class="content-box rounded-xl p-8 w-1/2 pop-in" style="animation-delay: 0.8s;">
+                            <i class="fas fa-chart-pie text-6xl text-green-300 mb-4"></i>
+                            <h3 class="title text-3xl">Coeficiente de Determinación (R²)</h3>
+                            <p class="mt-2 text-lg">Indica qué proporción de la variabilidad de los datos es explicada por el modelo. <span class="font-bold">Cuanto más cercano a 1, mejor.</span></p>
+                        </div>
+                    </div>
+                    <p class="mt-16 text-2xl max-w-5xl mx-auto fade-in-up" style="animation-delay: 1.2s;">
+                        No basta con que el modelo "funcione", necesitamos <span class="font-bold text-purple-300">métricas objetivas</span> para cuantificar su rendimiento y compararlo con otros.
+                    </p>
+                </div>
+                <div class="footer-note">10 / 12<br>Evaluación: Regresión</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 11: Optimización ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Paso 5: Optimización</h1>
+                    <h2 class="subtitle text-3xl text-pink-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Ajustando las Perillas del Modelo</h2>
+                    <div class="flex items-center justify-around gap-8">
+                        <div class="text-center pop-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-sliders text-9xl text-cyan-300"></i>
+                            <h3 class="font-bold mt-4 text-xl">Hiperparámetros</h3>
+                            <p class="font-mono">n_estimators = ?<br>max_depth = ?</p>
+                        </div>
+                        <div class="fade-in" style="animation-delay: 1.0s;">
+                            <i class="fas fa-arrow-right-long text-7xl text-pink-300"></i>
+                        </div>
+                        <div class="text-center pop-in" style="animation-delay: 1.5s;">
+                            <i class="fas fa-trophy text-9xl text-amber-300"></i>
+                             <h3 class="font-bold mt-4 text-xl">Modelo Óptimo</h3>
+                            <p class="font-mono">n_estimators = 200<br>max_depth = 10</p>
+                        </div>
+                    </div>
+                    <p class="mt-16 text-2xl max-w-5xl mx-auto fade-in-up" style="animation-delay: 2s;">
+                        La mayoría de algoritmos tienen "diales" que podemos ajustar antes del entrenamiento. Encontrar la combinación óptima <span class="font-bold text-pink-300">puede marcar una diferencia drástica.</span>
+                    </p>
+                </div>
+                <div class="footer-note">11 / 12<br>Optimización</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 12: GridSearchCV ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">La Herramienta Definitiva: GridSearchCV</h1>
+                    <h2 class="subtitle text-3xl text-pink-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Búsqueda Exhaustiva y Robusta</h2>
+                    <div class="flex justify-center items-center gap-12">
+                        <div class="content-box rounded-xl p-8 fade-in-up" style="animation-delay: 0.6s;">
+                            <h3 class="font-bold text-xl text-amber-300 mb-4">Grid Search (Búsqueda en Rejilla)</h3>
+                            <p>Le damos una lista de valores para cada hiperparámetro, y prueba <span class="font-bold">todas las combinaciones posibles</span> de forma exhaustiva.</p>
+                        </div>
+                        <div class="content-box rounded-xl p-8 fade-in-up" style="animation-delay: 0.9s;">
+                            <h3 class="font-bold text-xl text-cyan-300 mb-4">Cross Validation (Validación Cruzada)</h3>
+                            <p>Se asegura de que los resultados son estables y no fruto de la casualidad, <span class="font-bold">evitando el sobreajuste</span> al buscar los mejores parámetros.</p>
+                        </div>
+                    </div>
+                    <div class="pop-in mt-12" style="animation-delay: 1.5s;">
+                        <i class="fas fa-rocket text-8xl text-pink-300"></i>
+                        <h2 class="title text-4xl mt-4 text-white">LA MEJOR SOLUCIÓN POSIBLE</h2>
+                    </div>
+                    <p class="mt-10 text-xl max-w-5xl mx-auto fade-in" style="animation-delay: 2.0s;">
+                        Este ciclo completo, desde la limpieza hasta la optimización, es el latido del Machine Learning, un proceso que Scikit-Learn hace accesible y extraordinariamente potente.
+                    </p>
+                </div>
+                <div class="footer-note">12 / 12<br>GridSearchCV y Conclusión</div>
+            </div>
+
+        </div>
+
+        <div id="script-panel">
+            <!-- El guion se cargará aquí -->
+        </div>
+    </div>
+
+    <!-- ===== CONTROLES DE NAVEGACIÓN Y AUDIO ===== -->
+    <div id="navigation-controls">
+        <button id="prev-btn" title="Anterior"><i class="fas fa-arrow-left"></i></button>
+        <span id="slide-counter">1 / 12</span>
+        <button id="next-btn" title="Siguiente"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    <audio id="audio-player" controls>
+        <source src="4.wav" type="audio/wav">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const counterElement = document.getElementById('slide-counter');
+            const scriptPanel = document.getElementById('script-panel');
+            let currentSlide = 0;
+
+            const scriptsBySlide = [
+                {
+                    "title": "DIAPOSITIVA 1: Introducción a Scikit-Learn",
+                    "script": "Entremos de lleno en el corazón de la ingeniería de Machine Learning. Cuando empezamos a construir sistemas inteligentes, no siempre necesitamos las redes neuronales más gigantescas y complejas. De hecho, para la gran mayoría de los problemas del mundo real, la solución más elegante, rápida y eficiente se encuentra en un conjunto de herramientas que todo ingeniero de datos debe dominar. Hablamos de Scikit-Learn. Piensen en ella no como una herramienta, sino como la navaja suiza definitiva del Machine Learning. Es una biblioteca para Python que nos da acceso, con una simplicidad y coherencia asombrosas, a docenas de algoritmos listos para usar."
+                },
+                {
+                    "title": "DIAPOSITIVA 2: El Flujo de Trabajo Universal",
+                    "script": "La belleza de Scikit-Learn no reside solo en la potencia de sus modelos, sino en la elegancia de su flujo de trabajo, una especie de receta universal que podemos aplicar a casi cualquier problema. Este flujo de trabajo es el verdadero 'framework' que quiero que interioricen, porque una vez que lo dominan, pueden experimentar con distintos modelos con una facilidad pasmosa. Vamos a desgranar esta receta, paso a paso."
+                },
+                {
+                    "title": "DIAPOSITIVA 3: Paso 1 - Preprocesamiento",
+                    "script": "El primer paso, y absolutamente crucial, es el preprocesamiento de los datos. Nuestros datos casi nunca vienen listos para ser consumidos por un algoritmo. Son como los ingredientes crudos de una receta: hay que lavarlos, pelarlos y cortarlos."
+                },
+                {
+                    "title": "DIAPOSITIVA 4: Escalado de Características",
+                    "script": "Aquí Scikit-Learn nos ofrece herramientas fantásticas. Por un lado, tenemos el escalado de características. Imaginen que tenemos un conjunto de datos para predecir el precio de una casa y tenemos dos variables: el número de habitaciones, que va de 1 a 5, y la superficie en metros cuadrados, que puede ir de 50 a 300. Si metemos esos números directamente en un modelo, la superficie, por su magnitud numérica, tendrá un peso desproporcionado. Para evitar esto, usamos escaladores como `StandardScaler` o `MinMaxScaler`. De esta forma, todas las características compiten en igualdad de condiciones."
+                },
+                {
+                    "title": "DIAPOSITIVA 5: Codificación Categórica",
+                    "script": "Por otro lado, está la codificación de variables categóricas. Los modelos matemáticos no entienden de palabras como 'rojo', 'verde' o 'azul'. Necesitan números. Aquí entran en juego los codificadores. Uno de los más famosos es el `OneHotEncoder`. Lo que hace es tomar una columna con, digamos, tres categorías –'Madrid', 'Barcelona', 'Valencia'– y la convierte en tres nuevas columnas binarias. Es una forma brillante de representar información no numérica sin crear una falsa relación de orden."
+                },
+                {
+                    "title": "DIAPOSITIVA 6: División de Datos",
+                    "script": "Una vez que nuestros datos están limpios, escalados y codificados, llega el segundo paso, uno de los conceptos más fundamentales: la división de los datos. Usamos `train_test_split`. ¿Por qué? Imaginen que van a un examen y el profesor les da por adelantado las mismas preguntas. Sacarán una nota perfecta, pero solo habrán memorizado. Con los modelos pasa lo mismo. Si entrenamos y evaluamos con los mismos datos, obtendrá una puntuación espectacular, pero será una ilusión. Dividimos nuestro conjunto de datos en una parte para entrenar (70-80%) y una más pequeña que el modelo nunca verá durante el entrenamiento, que usaremos para evaluarlo de forma honesta. Es nuestro examen final secreto."
+                },
+                {
+                    "title": "DIAPOSITIVA 7: Tipos de Problemas",
+                    "script": "Con los datos listos y separados, llegamos al tercer paso: la selección y el entrenamiento del modelo. Primero, debemos entender qué tipo de problema queremos resolver. Si queremos predecir un valor numérico continuo, como el precio, es un problema de regresión. Si, por el contrario, queremos predecir una categoría, como si un correo es spam o no, es un problema de clasificación. Y si no tenemos etiquetas y queremos encontrar grupos ocultos, como segmentar clientes, entramos en el aprendizaje no supervisado."
+                },
+                {
+                    "title": "DIAPOSITIVA 8: API Unificada .fit() y .predict()",
+                    "script": "Lo más increíble de Scikit-Learn es que, independientemente del modelo que elijamos, la forma de usarlo es idéntica. Siempre hay dos métodos clave: `.fit()` y `.predict()`. Con `.fit(X_train, y_train)` le pasamos nuestros datos de entrenamiento y sus etiquetas, y el modelo aprende. Es el proceso de estudio. Una vez entrenado, usamos `.predict(X_test)` con los datos de prueba que habíamos guardado, y el modelo nos devuelve sus predicciones. Esta coherencia es lo que convierte a Scikit-Learn en una herramienta tan productiva para la experimentación."
+                },
+                {
+                    "title": "DIAPOSITIVA 9: Evaluación (Clasificación)",
+                    "script": "Después de predecir, necesitamos saber qué tan buena es la predicción. Y eso nos lleva al cuarto paso: la evaluación. Para la clasificación, la más intuitiva es el `accuracy` o exactitud: el porcentaje de predicciones correctas. Sin embargo, puede ser engañosa. Imaginen un test para una enfermedad rara que afecta al 1% de la población. Un modelo que siempre predice 'no enfermo' tendría un 99% de accuracy, ¡pero sería completamente inútil! Por eso tenemos métricas más sofisticadas como `precision`, `recall`, `F1-score` y la `matriz de confusión` para entender los aciertos y los diferentes tipos de errores."
+                },
+                {
+                    "title": "DIAPOSITIVA 10: Evaluación (Regresión)",
+                    "script": "Para la regresión, las métricas son diferentes. Usamos el `MSE` o Error Cuadrático Medio, que nos da una idea de cuán lejos, en promedio, están nuestras predicciones de los valores reales. Y también el `R²` o coeficiente de determinación, que nos indica qué proporción de la variabilidad de los datos es explicada por nuestro modelo. Un R² cercano a 1 es señal de un muy buen ajuste."
+                },
+                 {
+                    "title": "DIAPOSITIVA 11: Optimización de Hiperparámetros",
+                    "script": "Finalmente, hemos entrenado y evaluado un modelo. ¿Podemos hacerlo mejor? Casi siempre. Y aquí entra el quinto paso: la optimización. La mayoría de los algoritmos tienen una serie de 'perillas' o 'diales' que podemos ajustar antes del entrenamiento. Estos se llaman hiperparámetros. En un `RandomForestClassifier`, por ejemplo, un hiperparámetro clave es el número de árboles o la profundidad máxima de cada árbol. Encontrar la combinación óptima de estos hiperparámetros puede marcar una diferencia drástica en el rendimiento."
+                },
+                 {
+                    "title": "DIAPOSITIVA 12: GridSearchCV y Conclusión",
+                    "script": "Hacer esto a mano sería una locura. Por eso Scikit-Learn nos regala una herramienta fenomenal: `GridSearchCV`. 'Grid Search' significa 'búsqueda en rejilla'. Le proporcionamos una lista de posibles valores para cada hiperparámetro, y `GridSearchCV` prueba, de forma exhaustiva, todas las combinaciones posibles. Y lo hace de manera robusta, utilizando validación cruzada ('CV'), que es una técnica para asegurarse de que los resultados son estables. Es nuestra mejor arma para exprimir hasta la última gota de rendimiento de nuestro modelo. Este ciclo completo, desde la limpieza de datos hasta la optimización, es el latido del Machine Learning clásico."
+                }
+            ];
+
+            function showSlide(index) {
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.remove('active');
+                }
+                currentSlide = index;
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.add('active');
+                }
+                counterElement.textContent = `${currentSlide + 1} / ${slides.length}`;
+                prevBtn.disabled = (currentSlide === 0);
+                nextBtn.disabled = (currentSlide === slides.length - 1);
+                
+                if (scriptPanel && scriptsBySlide[index]) {
+                    const { title, script } = scriptsBySlide[index];
+                    const scriptParagraphs = script.split('\n').map(p => p.trim()).filter(Boolean);
+                    
+                    let htmlContent = `<h2>${title}</h2>`;
+                    htmlContent += `<h3>Guion</h3>`;
+                    scriptParagraphs.forEach(p => {
+                        htmlContent += `<p>${p}</p>`;
+                    });
+
+                    scriptPanel.innerHTML = htmlContent;
+                }
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' && !nextBtn.disabled) {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
+                    prevBtn.click();
+                }
+            });
+
+            showSlide(0);
+        });
+    </script>
+</body>
+</html>

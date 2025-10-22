@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación: Los Pilares Matemáticos de la IA</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            background-color: #0c1421;
+            height: 100%;
+        }
+        .main-view {
+            display: flex;
+            height: 100vh;
+        }
+        .presentation-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        #script-panel {
+            width: 450px;
+            flex-shrink: 0;
+            background-color: #080f1a;
+            color: #e5e7eb;
+            border-left: 1px solid #1f2937;
+            overflow-y: auto;
+            padding: 2rem;
+            font-family: 'Roboto', sans-serif;
+        }
+        #script-panel h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #67e8f9; /* cyan-300 */
+            font-size: 1.5rem; /* text-2xl */
+            margin-bottom: 1rem;
+        }
+        #script-panel h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: #fde047; /* amber-300 */
+            font-size: 1.125rem; /* text-lg */
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        #script-panel p {
+            line-height: 1.625;
+            color: #d1d5db; /* gray-300 */
+            margin-bottom: 1rem;
+        }
+        .presentation-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+        }
+        .slide {
+            display: none;
+            width: 1280px; 
+            min-height: 720px; 
+            position: relative;
+            font-family: 'Roboto', sans-serif; 
+            color: white;
+            overflow: hidden;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            background: linear-gradient(135deg, #051937, #004d7a, #008793);
+        }
+        .slide.active {
+            display: flex;
+        }
+
+        .title { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .subtitle { font-family: 'Montserrat', sans-serif; font-weight: 600; }
+        .content-box { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .stars {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: -1;
+            background-image: radial-gradient(white, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
+            background-size: 150px 150px; opacity: 0.08;
+            animation: stars-move 60s linear infinite;
+        }
+        @keyframes stars-move {
+            from { background-position: 0 0; }
+            to { background-position: -1500px -1500px; }
+        }
+        .footer-note {
+            position: absolute; bottom: 1rem; right: 2rem; text-align: right;
+            font-size: 0.875rem; color: #9ca3af; z-index: 10;
+        }
+        #navigation-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+        }
+        #navigation-controls button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+        }
+        #navigation-controls button:hover:not(:disabled) { color: #67e8f9; transform: scale(1.1); }
+        #navigation-controls button:disabled { color: #4b5563; cursor: not-allowed; }
+        #slide-counter { color: white; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; }
+
+        /* --- ANIMACIONES GENERALES --- */
+        .active .fade-in-up { animation: fade-in-up-anim 0.8s ease-out forwards; opacity: 0; }
+        @keyframes fade-in-up-anim { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .active .fade-in { animation: fade-in-anim 1s ease-in forwards; opacity: 0; }
+        @keyframes fade-in-anim { from { opacity: 0; } to { opacity: 1; } }
+        .active .pop-in { animation: pop-in-anim 0.6s ease-out forwards; opacity: 0; transform: scale(0.5); }
+        @keyframes pop-in-anim { to { opacity: 1; transform: scale(1); } }
+        .active .fade-in-left { animation: fade-in-left-anim 0.8s ease-out forwards; opacity: 0; }
+        @keyframes fade-in-left-anim { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        
+        /* --- ANIMACIONES ESPECÍFICAS --- */
+        .active .magic-poof { animation: magic-poof-anim 1.5s 0.5s ease-out forwards; }
+        @keyframes magic-poof-anim { 
+            0% { opacity: 1; transform: scale(1) rotate(0); } 
+            100% { opacity: 0; transform: scale(3) rotate(90deg); } 
+        }
+        .active .pillar { animation: pillar-rise 1s ease-out forwards; transform: translateY(100px); opacity: 0; }
+        @keyframes pillar-rise { to { transform: translateY(0); opacity: 1; } }
+        
+        .active .data-flow-arrow { animation: data-flow-anim 2s 1s infinite ease-in-out; }
+        @keyframes data-flow-anim { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(10px); } }
+
+        .active .bayes-update { animation: bayes-update-anim 2s 1.5s ease-out forwards; opacity: 0; transform: scale(0.8); }
+        @keyframes bayes-update-anim { to { opacity: 1; transform: scale(1); } }
+
+        .gradient-path { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: draw-path 2s 1s ease-out forwards; }
+        @keyframes draw-path { to { stroke-dashoffset: 0; } }
+        .gradient-ball { animation: move-ball 2s 1s ease-out forwards; }
+        @keyframes move-ball { to { motion-offset: 100%; } }
+
+        #audio-player { position: fixed; bottom: 15px; left:20%; transform: translateX(-50%); width: 80%; max-width: 500px; z-index: 1000; opacity: 0.85; transition: opacity 0.3s; }
+        #audio-player:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+    <div class="main-view">
+        <div class="presentation-wrapper">
+
+            <!-- ===== DIAPOSITIVA 1: Introducción ===== -->
+            <div class="slide active">
+                <div class="stars"></div>
+                <div class="text-center">
+                    <div class="fade-in-up">
+                        <h2 class="subtitle text-4xl text-cyan-300">Inteligencia Artificial</h2>
+                        <h1 class="title text-6xl mt-2 text-white">No es Magia, es Matemática</h1>
+                    </div>
+                    <div class="mt-16 w-full max-w-4xl flex justify-center items-center text-8xl relative">
+                        <i class="fas fa-hat-wizard text-purple-300 absolute" style="font-size: 10rem; filter: drop-shadow(0 0 20px #a855f7);"></i>
+                        <i class="fas fa-times-circle text-red-500 absolute magic-poof" style="font-size: 12rem; mix-blend-mode: screen;"></i>
+                        <i class="fas fa-cogs text-amber-300 pop-in" style="font-size: 10rem; animation-delay: 1.5s; filter: drop-shadow(0 0 20px #fde047);"></i>
+                    </div>
+                    <div class="mt-16 content-box rounded-lg p-6 max-w-5xl text-center fade-in-up" style="animation-delay: 2s;">
+                        <p class="text-xl">Debajo de cada red neuronal, lo que hay no es brujería. Es matemática pura, dura y elegantísima.</p>
+                    </div>
+                </div>
+                <div class="footer-note">1 / 12<br>Introducción</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 2: Los Tres Pilares ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl text-center">
+                    <h1 class="title text-5xl mb-12 fade-in-up">El Motor de la IA: Los 3 Pilares Matemáticos</h1>
+                    <div class="grid grid-cols-3 gap-8 items-end">
+                        <div class="pillar content-box rounded-xl p-6" style="animation-delay: 0.5s;">
+                            <i class="fas fa-project-diagram text-6xl text-cyan-300 mb-4"></i>
+                            <h2 class="title text-3xl">Álgebra Lineal</h2>
+                            <p class="subtitle text-xl mt-2">El Lenguaje</p>
+                        </div>
+                        <div class="pillar content-box rounded-xl p-6" style="animation-delay: 0.8s;">
+                            <i class="fas fa-balance-scale text-6xl text-green-300 mb-4"></i>
+                            <h2 class="title text-3xl">Probabilidad y Estadística</h2>
+                            <p class="subtitle text-xl mt-2">La Lógica</p>
+                        </div>
+                        <div class="pillar content-box rounded-xl p-6" style="animation-delay: 1.1s;">
+                            <i class="fas fa-rocket text-6xl text-yellow-300 mb-4"></i>
+                            <h2 class="title text-3xl">Cálculo</h2>
+                            <p class="subtitle text-xl mt-2">El Motor</p>
+                        </div>
+                    </div>
+                    <p class="mt-16 text-2xl max-w-4xl mx-auto fade-in-up" style="animation-delay: 1.5s;">
+                        Sobre estos tres pilares se construye cada avance que nos deja con la boca abierta.
+                    </p>
+                </div>
+                <div class="footer-note">2 / 12<br>Los Tres Pilares</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 3: Pilar 1 - Álgebra Lineal ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl text-center">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Pilar #1: Álgebra Lineal</h1>
+                    <h2 class="subtitle text-3xl text-cyan-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">El Idioma Oficial de la IA</h2>
+                    <div class="flex items-center justify-around gap-8 text-6xl">
+                        <div class="text-center pop-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-globe-americas text-green-300"></i>
+                            <p class="text-2xl mt-4">Mundo Analógico</p>
+                        </div>
+                        <div class="text-4xl data-flow-arrow" style="animation-delay: 1s;">
+                            <i class="fas fa-long-arrow-alt-right"></i>
+                        </div>
+                        <div class="content-box rounded-lg p-6 pop-in" style="animation-delay: 1.2s;">
+                            <h3 class="text-2xl font-bold mb-2">Traducción</h3>
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <div class="text-4xl data-flow-arrow" style="animation-delay: 1s;">
+                            <i class="fas fa-long-arrow-alt-right"></i>
+                        </div>
+                        <div class="text-center pop-in" style="animation-delay: 1.5s;">
+                            <i class="fas fa-digital-tachograph text-red-300"></i>
+                            <p class="text-2xl mt-4">Mundo Digital</p>
+                        </div>
+                    </div>
+                    <p class="mt-12 text-2xl max-w-5xl mx-auto fade-in-up" style="animation-delay: 2s;">
+                        Traduce nuestro mundo complejo a un formato que una máquina puede procesar: <span class="font-bold text-cyan-300">vectores y matrices</span>.
+                    </p>
+                </div>
+                <div class="footer-note">3 / 12<br>Álgebra Lineal</div>
+            </div>
+            
+            <!-- ===== DIAPOSITIVA 4: Vectores ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl text-center">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Vectores: La Esencia de los Datos</h1>
+                    <h2 class="subtitle text-3xl text-cyan-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Una lista ordenada de números</h2>
+                    <div class="grid grid-cols-3 gap-8 text-center">
+                        <div class="content-box rounded-xl p-6 fade-in-left" style="animation-delay: 0.5s;">
+                            <i class="fas fa-palette text-6xl text-red-400 mb-4"></i>
+                            <h3 class="subtitle text-2xl">Un Píxel</h3>
+                            <p class="font-mono text-lg mt-2">[R, G, B]</p>
+                            <p>[255, 99, 71]</p>
+                        </div>
+                        <div class="content-box rounded-xl p-6 fade-in-left" style="animation-delay: 0.8s;">
+                             <i class="fas fa-image text-6xl text-blue-400 mb-4"></i>
+                            <h3 class="subtitle text-2xl">Una Imagen</h3>
+                            <p class="font-mono text-lg mt-2">[p₁, p₂, ... pₙ]</p>
+                            <p>Millones de números</p>
+                        </div>
+                        <div class="content-box rounded-xl p-6 fade-in-left" style="animation-delay: 1.1s;">
+                             <i class="fas fa-book-open text-6xl text-yellow-400 mb-4"></i>
+                            <h3 class="subtitle text-2xl">Una Palabra</h3>
+                            <p class="font-mono text-lg mt-2">["Rey", "Reina"]</p>
+                            <p>Vectores cercanos en el espacio</p>
+                        </div>
+                    </div>
+                    <p class="mt-12 text-2xl max-w-5xl mx-auto fade-in-up" style="animation-delay: 1.5s;">
+                        El vector captura la <span class="font-bold text-cyan-300">esencia</span> numérica de cualquier concepto.
+                    </p>
+                </div>
+                <div class="footer-note">4 / 12<br>Vectores</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 5: Matrices ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl text-center">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Matrices: Organizando el Conocimiento</h1>
+                    <div class="grid grid-cols-2 gap-12 items-center">
+                        <div class="text-center">
+                            <i class="fas fa-table text-9xl text-cyan-300 pop-in" style="animation-delay: 0.5s;"></i>
+                            <h3 class="subtitle text-3xl mt-6 fade-in-up" style="animation-delay: 0.8s;">Una tabla de números</h3>
+                            <p class="text-xl mt-4 fade-in-up" style="animation-delay: 1s;">Un conjunto de vectores apilados.</p>
+                        </div>
+                        <div class="content-box rounded-xl p-8 text-left space-y-4">
+                            <div class="fade-in-up" style="animation-delay: 1.2s;">
+                                <h3 class="subtitle text-2xl text-amber-300"><i class="fas fa-database mr-2"></i>Organizan Datos</h3>
+                                <p>Miles de clientes (vectores) en una sola tabla (matriz).</p>
+                            </div>
+                            <div class="fade-in-up" style="animation-delay: 1.5s;">
+                                <h3 class="subtitle text-2xl text-amber-300"><i class="fas fa-brain mr-2"></i>Almacenan "Conocimiento"</h3>
+                                <p>Las conexiones entre neuronas se guardan en matrices de pesos.</p>
+                            </div>
+                             <div class="fade-in-up" style="animation-delay: 1.8s;">
+                                <h3 class="subtitle text-2xl text-amber-300"><i class="fas fa-sitemap mr-2"></i>Transforman Información</h3>
+                                <p>La multiplicación de matrices hace fluir los datos por la red.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mt-12 text-2xl max-w-5xl mx-auto fade-in" style="animation-delay: 2.2s;">Aprender, para una IA, es <span class="font-bold text-cyan-300">ajustar los números</span> de estas matrices.</p>
+                </div>
+                <div class="footer-note">5 / 12<br>Matrices</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 6: Pilar 2 - Probabilidad y Estadística ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl text-center">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Pilar #2: Probabilidad y Estadística</h1>
+                    <h2 class="subtitle text-3xl text-green-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">La Lógica para Gestionar la Duda</h2>
+                    <div class="grid grid-cols-3 gap-8 items-center text-center">
+                        <div class="pop-in" style="animation-delay: 0.6s;">
+                            <i class="fas fa-cloud-sun text-8xl text-blue-300"></i>
+                            <p class="text-2xl mt-4">Mundo Desordenado e Impredecible</p>
+                        </div>
+                        <div class="text-6xl pop-in" style="animation-delay: 0.9s;">
+                            <i class="fas fa-balance-scale text-green-300"></i>
+                        </div>
+                         <div class="pop-in" style="animation-delay: 1.2s;">
+                            <i class="fas fa-robot text-8xl text-yellow-300"></i>
+                            <p class="text-2xl mt-4">Decisiones Inteligentes y Cuantificadas</p>
+                        </div>
+                    </div>
+                    <div class="mt-12 max-w-4xl mx-auto content-box rounded-xl p-6 fade-in-up" style="animation-delay: 1.6s;">
+                        <p class="text-2xl">Un modelo de IA nunca dice "esto es un gato".</p>
+                        <p class="text-2xl mt-4">Dice: "hay una probabilidad del <span class="font-bold text-green-300">98%</span> de que sea un gato".</p>
+                    </div>
+                </div>
+                <div class="footer-note">6 / 12<br>Probabilidad y Estadística</div>
+            </div>
+            
+            <!-- ===== DIAPOSITIVA 7: Teorema de Bayes ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl text-center">
+                    <h1 class="title text-5xl mb-4 fade-in-up">La Joya de la Corona: Teorema de Bayes</h1>
+                    <h2 class="subtitle text-3xl text-green-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">La Lógica de Aprender de la Experiencia</h2>
+                    <div class="flex items-center justify-center gap-8 text-center text-2xl">
+                        <div class="fade-in-left" style="animation-delay: 0.6s;">
+                            <i class="far fa-lightbulb text-6xl text-yellow-300"></i>
+                            <p class="mt-4">Creencia<br>Inicial (a priori)</p>
+                        </div>
+                        <i class="fas fa-plus text-5xl pop-in" style="animation-delay: 1.0s;"></i>
+                        <div class="fade-in-left" style="animation-delay: 1.2s;">
+                            <i class="fas fa-microscope text-6xl text-cyan-300"></i>
+                            <p class="mt-4">Nueva<br>Evidencia</p>
+                        </div>
+                        <i class="fas fa-long-arrow-alt-right text-5xl pop-in" style="animation-delay: 1.4s;"></i>
+                        <div class="content-box rounded-full p-8 bayes-update" style="border-color: #6ee7b7;">
+                            <i class="fas fa-brain text-6xl text-green-300"></i>
+                            <p class="mt-4">Creencia<br>Actualizada</p>
+                        </div>
+                    </div>
+                    <div class="mt-12 content-box rounded-xl p-6 max-w-4xl mx-auto fade-in-up" style="animation-delay: 2.2s;">
+                        <h3 class="subtitle text-2xl">Ejemplo: Filtro de Spam</h3>
+                        <p class="text-xl mt-2"><span class="text-yellow-300">Creencia inicial</span> sobre un correo + <span class="text-cyan-300">análisis de palabras</span> (evidencia) = <span class="text-green-300">Decisión final</span>.</p>
+                    </div>
+                </div>
+                <div class="footer-note">7 / 12<br>Teorema de Bayes</div>
+            </div>
+            
+            <!-- ===== DIAPOSITIVA 8: El Rol de la Estadística ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 text-center fade-in-up">Estadística: Las Herramientas Prácticas</h1>
+                    <div class="grid grid-cols-2 gap-10">
+                        <div class="content-box rounded-xl p-8 fade-in-up" style="animation-delay: 0.4s;">
+                            <i class="fas fa-search-plus text-5xl mb-4 text-green-300"></i>
+                            <h3 class="title text-3xl mb-4">Estadística Descriptiva</h3>
+                            <p class="text-lg">Es el primer paso, el análisis exploratorio para <span class="font-bold">entender</span> nuestros datos: calcular la media, la mediana, ver la dispersión...</p>
+                        </div>
+                         <div class="content-box rounded-xl p-8 fade-in-up" style="animation-delay: 0.8s;">
+                            <i class="fas fa-infinity text-5xl mb-4 text-green-300"></i>
+                            <h3 class="title text-3xl mb-4">Inferencia Estadística</h3>
+                            <p class="text-lg">La verdadera magia. Nos permite tomar una muestra de datos y hacer <span class="font-bold">generalizaciones</span> sobre el conjunto total para que el modelo funcione con datos nuevos.</p>
+                        </div>
+                    </div>
+                     <p class="mt-16 text-2xl max-w-5xl mx-auto fade-in-up text-center" style="animation-delay: 1.2s;">
+                        Es crucial para evaluar si nuestro modelo <span class="font-bold text-green-300">funciona de verdad</span> o si solo ha memorizado los ejemplos.
+                    </p>
+                </div>
+                <div class="footer-note">8 / 12<br>Estadística</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 9: Pilar 3 - Cálculo ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl text-center">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Pilar #3: Cálculo</h1>
+                    <h2 class="subtitle text-3xl text-yellow-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">El Motor del Aprendizaje y la Optimización</h2>
+                    <div class="content-box rounded-xl p-8 max-w-4xl mx-auto">
+                        <h3 class="subtitle text-2xl fade-in-up" style="animation-delay: 0.6s;">Concepto Central: La Derivada</h3>
+                        <p class="text-xl mt-4 fade-in-up" style="animation-delay: 0.9s;">Mide cómo cambia el <span class="text-red-400 font-bold">error</span> de nuestro modelo cuando modificamos ligeramente uno de sus <span class="text-cyan-400 font-bold">parámetros</span> (pesos).</p>
+                        <div class="mt-8 flex justify-center items-center gap-8 text-6xl">
+                            <i class="fas fa-sliders-h text-cyan-400 pop-in" style="animation-delay: 1.2s;" title="Parámetro"></i>
+                            <i class="fas fa-question text-gray-400 pop-in" style="animation-delay: 1.4s;"></i>
+                            <i class="fas fa-chart-line text-red-400 pop-in" style="animation-delay: 1.6s;" title="Error"></i>
+                        </div>
+                    </div>
+                     <p class="mt-12 text-2xl max-w-5xl mx-auto fade-in-up" style="animation-delay: 2.0s;">
+                        El cálculo nos da el mecanismo para <span class="font-bold text-yellow-300">optimizar</span> el modelo y hacerlo cada vez más preciso.
+                    </p>
+                </div>
+                <div class="footer-note">9 / 12<br>Cálculo</div>
+            </div>
+            
+            <!-- ===== DIAPOSITIVA 10: Descenso del Gradiente ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl text-center">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Descenso del Gradiente: Bajando al Valle del Error</h1>
+                    <h2 class="subtitle text-3xl text-yellow-300 mb-8 fade-in-up" style="animation-delay: 0.2s;">El algoritmo de optimización más famoso</h2>
+                    <div class="flex items-center justify-center gap-8">
+                        <div class="w-1/2">
+                           <svg viewBox="0 0 400 300">
+                                <path id="grad-path" d="M 20,250 C 80,50 200,50 250,150 S 300,280 380,100" stroke="#67e8f9" stroke-width="4" fill="transparent" class="gradient-path"/>
+                                <text x="10" y="30" fill="white" font-family="Montserrat" font-size="20">Error Alto</text>
+                                <text x="320" y="280" fill="white" font-family="Montserrat" font-size="20">Error Mínimo</text>
+                                <circle r="10" fill="#fde047" class="gradient-ball">
+                                    <animateMotion dur="2s" begin="1s" fill="freeze" path="M 20,250 C 80,50 200,50 250,150 S 300,280 380,100" />
+                                </circle>
+                           </svg>
+                        </div>
+                        <div class="w-1/2 text-left space-y-4">
+                            <div class="fade-in-up" style="animation-delay: 0.8s;">
+                                <h3 class="subtitle text-xl"><span class="text-yellow-300">1.</span> Calcular Gradiente</h3>
+                                <p>Apunta a la dirección de <span class="font-bold">máximo error</span>.</p>
+                            </div>
+                            <div class="fade-in-up" style="animation-delay: 1.2s;">
+                                <h3 class="subtitle text-xl"><span class="text-yellow-300">2.</span> Dar un Paso Opuesto</h3>
+                                <p>Nos movemos un poco "cuesta abajo".</p>
+                            </div>
+                             <div class="fade-in-up" style="animation-delay: 1.6s;">
+                                <h3 class="subtitle text-xl"><span class="text-yellow-300">3.</span> Repetir</h3>
+                                <p>Iteramos hasta llegar al punto más bajo posible.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-note">10 / 12<br>Descenso del Gradiente</div>
+            </div>
+            
+            <!-- ===== DIAPOSITIVA 11: Otras Herramientas ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="w-full max-w-6xl text-center">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Más allá de los Pilares: La Caja de Herramientas</h1>
+                    <div class="grid grid-cols-3 gap-8">
+                        <div class="content-box rounded-xl p-6 pop-in" style="animation-delay: 0.5s;">
+                            <i class="fas fa-trophy text-5xl mb-4 text-yellow-400"></i>
+                            <h3 class="title text-2xl">Teoría de la Optimización</h3>
+                            <p>El campo que estudia métodos como el Descenso del Gradiente.</p>
+                        </div>
+                        <div class="content-box rounded-xl p-6 pop-in" style="animation-delay: 0.8s;">
+                            <i class="fas fa-info-circle text-5xl mb-4 text-cyan-400"></i>
+                            <h3 class="title text-2xl">Teoría de la Información</h3>
+                            <p>Conceptos como la entropía para medir el desorden en los datos.</p>
+                        </div>
+                        <div class="content-box rounded-xl p-6 pop-in" style="animation-delay: 1.1s;">
+                            <i class="fas fa-chess-king text-5xl mb-4 text-purple-400"></i>
+                            <h3 class="title text-2xl">Lógica Matemática</h3>
+                            <p>Base de la IA simbólica y sistemas que requieren razonamiento estructurado.</p>
+                        </div>
+                    </div>
+                     <p class="mt-12 text-2xl max-w-5xl mx-auto fade-in" style="animation-delay: 1.5s;">
+                        El arsenal matemático de la IA es amplio y sigue creciendo.
+                    </p>
+                </div>
+                <div class="footer-note">11 / 12<br>Otras Herramientas</div>
+            </div>
+            
+            <!-- ===== DIAPOSITIVA 12: Conclusión ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Conclusión: El Verdadero Framework</h1>
+                    <div class="grid grid-cols-3 gap-8 items-center text-center mb-12">
+                        <div class="fade-in-up" style="animation-delay: 0.4s;">
+                            <i class="fas fa-project-diagram text-6xl text-cyan-300 mb-3"></i>
+                            <h3 class="subtitle text-2xl">Álgebra Lineal</h3>
+                            <p>El Lenguaje</p>
+                        </div>
+                        <div class="fade-in-up" style="animation-delay: 0.8s;">
+                            <i class="fas fa-balance-scale text-6xl text-green-300 mb-3"></i>
+                            <h3 class="subtitle text-2xl">Probabilidad</h3>
+                            <p>La Lógica</p>
+                        </div>
+                        <div class="fade-in-up" style="animation-delay: 1.2s;">
+                            <i class="fas fa-rocket text-6xl text-yellow-300 mb-3"></i>
+                            <h3 class="subtitle text-2xl">Cálculo</h3>
+                            <p>El Motor</p>
+                        </div>
+                    </div>
+                    <div class="content-box rounded-xl p-8 max-w-5xl mx-auto fade-in" style="animation-delay: 1.6s;">
+                        <i class="fas fa-drafting-compass text-6xl text-white mb-4 pop-in" style="animation-delay: 1.8s;"></i>
+                        <p class="text-2xl">
+                            Comprender estos fundamentos es la clave para <span class="font-bold">crear y mejorar</span>, no solo usar, la próxima generación de IA. Es el verdadero framework para construir el futuro.
+                        </p>
+                    </div>
+                </div>
+                <div class="footer-note">12 / 12<br>Conclusión</div>
+            </div>
+
+        </div>
+
+        <div id="script-panel">
+            <!-- El guion se cargará aquí -->
+        </div>
+    </div>
+
+    <!-- ===== CONTROLES DE NAVEGACIÓN Y AUDIO ===== -->
+    <div id="navigation-controls">
+        <button id="prev-btn" title="Anterior"><i class="fas fa-arrow-left"></i></button>
+        <span id="slide-counter">1 / 12</span>
+        <button id="next-btn" title="Siguiente"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    <audio id="audio-player" controls>
+        <source src="3.wav" type="audio/wav">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const counterElement = document.getElementById('slide-counter');
+            const scriptPanel = document.getElementById('script-panel');
+            let currentSlide = 0;
+
+            const scriptsBySlide = [
+                {
+                    "title": "DIAPOSITIVA 1: No es Magia, es Matemática",
+                    "script": "Mucha gente ve la Inteligencia Artificial como una especie de caja negra mágica. Metes datos por un lado, y por el otro sale una predicción, una imagen, una línea de código... como si fuera brujería. Pero aquí, en 'El Próximo Framework en Ingeniería', sabemos que debajo de cada capa de software, de cada red neuronal, lo que hay no es magia. Es matemática. Pura, dura y elegantísima matemática."
+                },
+                {
+                    "title": "DIAPOSITIVA 2: Los Tres Pilares",
+                    "script": "Hoy vamos a abrir el capó de la IA para ver el motor que lo mueve todo, los tres grandes pilares matemáticos sobre los que se construye cada avance que nos deja con la boca abierta."
+                },
+                {
+                    "title": "DIAPOSITIVA 3: Pilar #1 - Álgebra Lineal",
+                    "script": "El primer pilar, el lenguaje fundamental de la IA, es el Álgebra Lineal. Si la IA fuera un país, el álgebra lineal sería su idioma oficial. ¿Por qué? Porque vivimos en un mundo analógico, lleno de matices, colores y sonidos, pero los ordenadores solo entienden de números. El álgebra lineal nos da las herramientas para traducir nuestro mundo complejo a un formato que una máquina pueda procesar de forma eficiente."
+                },
+                {
+                    "title": "DIAPOSITIVA 4: Vectores",
+                    "script": "Todo en IA acaba siendo representado por dos conceptos clave: vectores y matrices. Pensemos en un vector. En IA, un vector es simplemente una lista de números. ¿Qué puede ser esa lista? Cualquier cosa. Un solo píxel en una foto en color. O una imagen entera de alta resolución, que sería un vector larguísimo. Incluso podemos representar palabras como vectores. En este espacio, palabras con significados similares, como 'rey' y 'reina', acaban estando cerca. El vector captura la esencia semántica."
+                },
+                {
+                    "title": "DIAPOSITIVA 5: Matrices",
+                    "script": "Si un vector es una lista de números, una matriz es simplemente una tabla de números, un conjunto de vectores apilados. Las matrices son la forma en que organizamos grandes conjuntos de datos, como una hoja de cálculo con datos de mil clientes. Pero su poder va mucho más allá. En las redes neuronales, el 'conocimiento' de la red se almacena en matrices de pesos. El proceso de aprendizaje consiste en ajustar los números de estas matrices. Así que, el Álgebra Lineal nos da el vocabulario y la gramática para hablar con los datos."
+                },
+                {
+                    "title": "DIAPOSITIVA 6: Pilar #2 - Probabilidad y Estadística",
+                    "script": "Pero tener el lenguaje no es suficiente. El mundo real es desordenado e impredecible. Y aquí es donde entra nuestro segundo pilar: la Probabilidad y la Estadística. Esta es la rama de las matemáticas que nos permite gestionar la duda, cuantificar la incertidumbre y tomar decisiones inteligentes a partir de datos incompletos o ruidosos. La probabilidad es una forma de medir nuestra confianza. Un modelo de IA nunca te dirá con un 100% de certeza que una imagen es un gato. Te dirá que hay una probabilidad del 98%."
+                },
+                {
+                    "title": "DIAPOSITIVA 7: Teorema de Bayes",
+                    "script": "Y dentro de la probabilidad, hay una joya: el Teorema de Bayes. Este teorema nos da una forma matemática de actualizar nuestras creencias a la luz de nueva evidencia. Es la lógica pura del aprendizaje a partir de la experiencia. Imaginen que son médicos. Tienen una idea inicial de la probabilidad de una enfermedad. Hacen una prueba, y el Teorema de Bayes les permite combinar su creencia inicial con el resultado para calcular una nueva probabilidad más precisa. Eso es exactamente lo que hace un filtro de spam."
+                },
+                {
+                    "title": "DIAPOSITIVA 8: El Rol de la Estadística",
+                    "script": "Junto a la probabilidad, tenemos a su hermana, la Estadística. La estadística descriptiva nos ayuda a entender los datos: calcular la media, la mediana, ver la dispersión. Es el primer paso. Pero la verdadera magia está en la inferencia estadística. Nos permite tomar una muestra de datos y hacer generalizaciones sobre el conjunto total. Cuando entrenamos un modelo de IA con un millón de imágenes para que luego pueda reconocer cualquier imagen, estamos haciendo inferencia. Y es crucial para evaluar si nuestro modelo funciona bien de verdad."
+                },
+                {
+                    "title": "DIAPOSITIVA 9: Pilar #3 - Cálculo",
+                    "script": "Bien, ya tenemos el lenguaje (Álgebra Lineal) y la lógica para la incertidumbre (Probabilidad y Estadística). Pero, ¿cómo aprende realmente la máquina? Aquí entra nuestro tercer y último gran pilar: el Cálculo. El cálculo, y en particular el cálculo diferencial, es el motor del aprendizaje, el mecanismo que permite a los modelos optimizarse. El concepto central aquí es la derivada, que mide cómo cambia el error de nuestro modelo cuando modificamos ligeramente uno de sus parámetros."
+                },
+                {
+                    "title": "DIAPOSITIVA 10: Descenso del Gradiente",
+                    "script": "Para minimizar ese error, usamos el gradiente, que agrupa todas las derivadas. El gradiente siempre apunta en la dirección en la que el error aumenta más rápidamente. ¡Pero nosotros queremos bajar al valle de la mínima equivocación! Y para eso usamos el Descenso del Gradiente. Es increíblemente intuitivo. Primero, calculamos el gradiente. Segundo, damos un pequeño paso en la dirección opuesta. Tercero, repetimos. Iteración tras iteración, vamos descendiendo hasta que llegamos a un punto mínimo. El cálculo es, literalmente, el proceso de aprendizaje hecho algoritmo."
+                },
+                {
+                    "title": "DIAPOSITIVA 11: Otras Herramientas Matemáticas",
+                    "script": "Así que ahí los tienen: Álgebra Lineal, Probabilidad y Estadística, y Cálculo. Pero el arsenal matemático de la IA no termina ahí. La Teoría de la Optimización nos da métodos más sofisticados. La Teoría de la Información nos da conceptos como la entropía para medir el desorden en los datos. Y la Lógica Matemática, que fue la base de los primeros sistemas de IA simbólica y sigue siendo crucial para aplicaciones que requieren un razonamiento estructurado."
+                },
+                {
+                    "title": "DIAPOSITIVA 12: Conclusión",
+                    "script": "Como ven, la inteligencia artificial no es una caja negra. Es un edificio monumental construido sobre cimientos matemáticos sólidos y elegantes. Cada vez que le piden algo a una IA, recuerden que detrás hay vectores manipulando datos, probabilidades evaluando la incertidumbre y gradientes descendiendo hacia una solución mejor. Comprender estos fundamentos es la clave para cualquiera que quiera no solo usar estas herramientas, sino crearlas, mejorarlas y liderar la próxima revolución tecnológica. Es el verdadero framework para construir el futuro."
+                }
+            ];
+
+            function showSlide(index) {
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.remove('active');
+                }
+                currentSlide = index;
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.add('active');
+                }
+                counterElement.textContent = `${currentSlide + 1} / ${slides.length}`;
+                prevBtn.disabled = (currentSlide === 0);
+                nextBtn.disabled = (currentSlide === slides.length - 1);
+                
+                if (scriptPanel && scriptsBySlide[index]) {
+                    const { title, script } = scriptsBySlide[index];
+                    const scriptParagraphs = script.split('. ').map(p => p.trim()).filter(Boolean);
+                    
+                    let htmlContent = `<h2>${title}</h2>`;
+                    htmlContent += `<h3>Guion</h3>`;
+                    scriptParagraphs.forEach(p => {
+                        htmlContent += `<p>${p}.</p>`;
+                    });
+
+                    scriptPanel.innerHTML = htmlContent;
+                }
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' && !nextBtn.disabled) {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
+                    prevBtn.click();
+                }
+            });
+
+            showSlide(0);
+        });
+    </script>
+</body>
+</html>
