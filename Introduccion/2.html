@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación: Fundamentos del Machine Learning</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            background-color: #0c1421;
+            height: 100%;
+        }
+        .main-view {
+            display: flex;
+            height: 100vh;
+        }
+        .presentation-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        #script-panel {
+            width: 450px;
+            flex-shrink: 0;
+            background-color: #080f1a;
+            color: #e5e7eb;
+            border-left: 1px solid #1f2937;
+            overflow-y: auto;
+            padding: 2rem;
+            font-family: 'Roboto', sans-serif;
+        }
+        #script-panel h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #67e8f9; /* cyan-300 */
+            font-size: 1.5rem; /* text-2xl */
+            margin-bottom: 1rem;
+        }
+        #script-panel h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: #fde047; /* amber-300 */
+            font-size: 1.125rem; /* text-lg */
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        #script-panel p {
+            line-height: 1.625;
+            color: #d1d5db; /* gray-300 */
+            margin-bottom: 1rem;
+        }
+        .slide {
+            display: none;
+            width: 1280px; 
+            min-height: 720px; 
+            position: relative;
+            font-family: 'Roboto', sans-serif; 
+            color: white;
+            overflow: hidden;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            background: linear-gradient(135deg, #051937, #004d7a, #008793);
+        }
+        .slide.active {
+            display: flex;
+        }
+
+        .title { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: -1px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .subtitle { font-family: 'Montserrat', sans-serif; font-weight: 600; }
+        .content-box { background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .stars {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: -1;
+            background-image: radial-gradient(white, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
+            background-size: 150px 150px; opacity: 0.08;
+            animation: stars-move 60s linear infinite;
+        }
+        @keyframes stars-move {
+            from { background-position: 0 0; }
+            to { background-position: -1500px -1500px; }
+        }
+        .footer-note {
+            position: absolute; bottom: 1rem; right: 2rem; text-align: right;
+            font-size: 0.875rem; color: #9ca3af; z-index: 10;
+        }
+        #navigation-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+        }
+        #navigation-controls button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+        }
+        #navigation-controls button:hover:not(:disabled) { color: #67e8f9; transform: scale(1.1); }
+        #navigation-controls button:disabled { color: #4b5563; cursor: not-allowed; }
+        #slide-counter { color: white; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 16px; }
+
+        /* --- ANIMACIONES GENERALES --- */
+        .active .fade-in-up { animation: fade-in-up-anim 0.8s ease-out forwards; opacity: 0; }
+        @keyframes fade-in-up-anim { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .active .fade-in { animation: fade-in-anim 1s ease-in forwards; opacity: 0; }
+        @keyframes fade-in-anim { from { opacity: 0; } to { opacity: 1; } }
+        .active .pop-in { animation: pop-in-anim 0.6s ease-out forwards; opacity: 0; transform: scale(0.5); }
+        @keyframes pop-in-anim { to { opacity: 1; transform: scale(1); } }
+
+        #audio-player { position: fixed; bottom: 15px; left:20%; transform: translateX(-50%); width: 80%; max-width: 500px; z-index: 1000; opacity: 0.85; transition: opacity 0.3s; }
+        #audio-player:hover { opacity: 1; }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-view">
+        <div class="presentation-wrapper">
+
+            <!-- ===== DIAPOSITIVA 1: Los 3 Paradigmas del ML ===== -->
+            <div class="slide active">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-7xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Los Tres Paradigmas del Machine Learning</h1>
+                    <div class="grid grid-cols-3 gap-8 text-center">
+                        <!-- Supervisado -->
+                        <div class="content-box rounded-xl p-6 fade-in-up" style="animation-delay: 0.5s;">
+                            <i class="fas fa-chalkboard-teacher text-6xl text-cyan-300"></i>
+                            <h2 class="title text-3xl mt-4">Supervisado</h2>
+                            <p class="mt-4 text-lg">Aprender con un "profesor". Se proporcionan datos con las respuestas correctas (etiquetas) para guiar el aprendizaje.</p>
+                            <div class="mt-4 font-mono text-amber-300"><i class="fas fa-tag"></i> imagen.jpg -> "gato"</div>
+                        </div>
+                        <!-- No Supervisado -->
+                        <div class="content-box rounded-xl p-6 fade-in-up" style="animation-delay: 0.8s;">
+                            <i class="fas fa-search-plus text-6xl text-green-300"></i>
+                             <h2 class="title text-3xl mt-4">No Supervisado</h2>
+                            <p class="mt-4 text-lg">Aprender por "descubrimiento". Se proporcionan datos sin etiquetas y el modelo debe encontrar patrones y estructuras por sí mismo.</p>
+                             <div class="mt-4 font-mono text-amber-300"><i class="fas fa-object-group"></i> Grupo A / Grupo B</div>
+                        </div>
+                        <!-- Refuerzo -->
+                        <div class="content-box rounded-xl p-6 fade-in-up" style="animation-delay: 1.1s;">
+                            <i class="fas fa-trophy text-6xl text-yellow-300"></i>
+                             <h2 class="title text-3xl mt-4">Por Refuerzo</h2>
+                            <p class="mt-4 text-lg">Aprender por "ensayo y error". El modelo (agente) aprende a tomar decisiones para maximizar una recompensa a largo plazo.</p>
+                             <div class="mt-4 font-mono text-amber-300"><i class="fas fa-gamepad"></i> Acción -> Recompensa</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-note">1 / 6<br>Introducción a los Paradigmas</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 2: Aprendizaje Supervisado: Regresión y Clasificación ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Aprendizaje Supervisado: El Caballo de Batalla</h1>
+                    <h2 class="subtitle text-2xl text-cyan-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Las dos tareas principales de la industria</h2>
+                    <div class="grid grid-cols-2 gap-10">
+                        <!-- Regresión -->
+                        <div class="content-box rounded-xl p-8 fade-in-up" style="animation-delay: 0.6s;">
+                             <i class="fas fa-chart-line text-7xl text-amber-300 mb-4"></i>
+                            <h3 class="title text-4xl mb-3">Regresión</h3>
+                            <p class="text-xl">Predecir un valor numérico <span class="font-bold">continuo</span>.</p>
+                            <ul class="mt-6 text-left space-y-2 text-lg">
+                                <li><i class="fas fa-dollar-sign w-6 text-center text-amber-300"></i> Precio de una acción</li>
+                                <li><i class="fas fa-thermometer-half w-6 text-center text-amber-300"></i> Temperatura de mañana</li>
+                                <li><i class="fas fa-gas-pump w-6 text-center text-amber-300"></i> Consumo de combustible</li>
+                            </ul>
+                        </div>
+                        <!-- Clasificación -->
+                        <div class="content-box rounded-xl p-8 fade-in-up" style="animation-delay: 0.9s;">
+                            <i class="fas fa-project-diagram text-7xl text-purple-300 mb-4"></i>
+                            <h3 class="title text-4xl mb-3">Clasificación</h3>
+                             <p class="text-xl">Predecir una <span class="font-bold">categoría</span> o clase.</p>
+                            <ul class="mt-6 text-left space-y-2 text-lg">
+                                <li><i class="fas fa-envelope-open-text w-6 text-center text-purple-300"></i> ¿Spam o no spam?</li>
+                                <li><i class="fas fa-credit-card w-6 text-center text-purple-300"></i> ¿Fraude o legítimo?</li>
+                                <li><i class="fas fa-vial w-6 text-center text-purple-300"></i> ¿Benigno o maligno?</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-note">2 / 6<br>Tipos de Aprendizaje Supervisado</div>
+            </div>
+            
+            <!-- ===== DIAPOSITIVA 3: El Arsenal de Clasificación ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                 <div class="w-full max-w-7xl text-center">
+                    <h1 class="title text-5xl mb-12 fade-in-up">El Arsenal de Clasificación</h1>
+                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="content-box p-6 rounded-xl pop-in" style="animation-delay: 0.5s;">
+                             <i class="fas fa-sitemap text-5xl text-green-300"></i>
+                             <h3 class="subtitle text-2xl mt-4">Árboles de Decisión</h3>
+                             <p class="mt-2">Aprende reglas tipo "si... entonces..." Fáciles de interpretar.</p>
+                        </div>
+                         <div class="content-box p-6 rounded-xl pop-in" style="animation-delay: 0.8s;">
+                             <i class="fas fa-arrows-alt-h text-5xl text-blue-300"></i>
+                             <h3 class="subtitle text-2xl mt-4">Máquinas de Vectores de Soporte (SVM)</h3>
+                             <p class="mt-2">Busca el "hiperplano" que mejor separa las clases con el margen más amplio.</p>
+                         </div>
+                         <div class="content-box p-6 rounded-xl pop-in" style="animation-delay: 1.1s;">
+                             <i class="fas fa-sliders-h text-5xl text-yellow-300"></i>
+                             <h3 class="subtitle text-2xl mt-4">Regresión Logística</h3>
+                             <p class="mt-2">Modela la probabilidad de que una entrada pertenezca a una clase particular.</p>
+                         </div>
+                     </div>
+                     <div class="mt-12 fade-in-up" style="animation-delay: 1.5s;">
+                        <div class="content-box p-8 rounded-xl max-w-4xl mx-auto border-2 border-cyan-300">
+                             <h2 class="title text-4xl text-cyan-300">Ensemble: La Sabiduría de la Multitud</h2>
+                            <div class="flex items-center justify-center gap-8 mt-4">
+                                <i class="fas fa-tree text-6xl"></i>
+                                <i class="fas fa-plus text-3xl"></i>
+                                <i class="fas fa-tree text-6xl"></i>
+                                <i class="fas fa-plus text-3xl"></i>
+                                <i class="fas fa-tree text-6xl"></i>
+                                <i class="fas fa-arrow-right text-4xl mx-4"></i>
+                                <div class="text-center">
+                                    <i class="fas fa-users text-7xl text-cyan-300"></i>
+                                    <h3 class="subtitle text-2xl mt-2">Random Forest</h3>
+                                </div>
+                            </div>
+                            <p class="mt-4 text-xl">Combina cientos de árboles de decisión para obtener una predicción mucho más robusta y precisa.</p>
+                        </div>
+                     </div>
+                </div>
+                <div class="footer-note">3 / 6<br>Algoritmos de Clasificación</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 4: Aprendizaje No Supervisado: Descubriendo Estructuras ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-4 fade-in-up">Aprendizaje No Supervisado: Descubriendo Estructuras</h1>
+                     <h2 class="subtitle text-2xl text-green-300 mb-12 fade-in-up" style="animation-delay: 0.2s;">Encontrando patrones en datos sin etiquetar</h2>
+                    <div class="grid grid-cols-2 gap-10">
+                        <!-- Clustering -->
+                        <div class="content-box rounded-xl p-8 fade-in-up" style="animation-delay: 0.6s;">
+                             <i class="fas fa-object-group text-7xl text-blue-300 mb-4"></i>
+                            <h3 class="title text-4xl mb-3">Clustering</h3>
+                            <p class="text-xl">Encontrar grupos naturales en los datos (clusters).</p>
+                             <ul class="mt-6 text-left space-y-2 text-lg">
+                                <li><i class="fas fa-users w-6 text-center text-blue-300"></i> Segmentación de clientes</li>
+                                <li><i class="fas fa-dna w-6 text-center text-blue-300"></i> Agrupación de genes</li>
+                                <li><i class="fas fa-images w-6 text-center text-blue-300"></i> Clasificación de imágenes</li>
+                             </ul>
+                             <p class="mt-4 font-mono">Algoritmos: K-Means, DBSCAN</p>
+                        </div>
+                        <!-- Reducción de Dimensionalidad -->
+                        <div class="content-box rounded-xl p-8 fade-in-up" style="animation-delay: 0.9s;">
+                            <div class="flex justify-center items-center gap-6 mb-4">
+                                <i class="fas fa-cube text-7xl text-purple-300"></i>
+                                <i class="fas fa-arrow-right text-4xl"></i>
+                                <i class="far fa-square text-7xl text-purple-300"></i>
+                            </div>
+                            <h3 class="title text-4xl mb-3">Reducción de Dimensionalidad</h3>
+                             <p class="text-xl">Simplificar los datos proyectándolos a un espacio más pequeño, conservando la información esencial.</p>
+                             <p class="mt-4 font-mono">Algoritmo principal: PCA</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-note">4 / 6<br>Tipos de Aprendizaje No Supervisado</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 5: Evaluación de Modelos: Métricas Clave ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                 <div class="text-center w-full max-w-6xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">Evaluación: ¿Realmente Funciona mi Modelo?</h1>
+                    <div class="grid grid-cols-2 gap-10">
+                         <div class="fade-in-up" style="animation-delay: 0.5s;">
+                            <h3 class="title text-3xl mb-4 text-amber-300">Métricas de Regresión</h3>
+                            <div class="content-box rounded-lg p-6 text-center">
+                                <i class="fas fa-ruler-combined text-5xl"></i>
+                                <h4 class="subtitle text-2xl mt-3">Error Cuadrático Medio (RMSE)</h4>
+                                <p class="mt-2">Mide qué tan lejos, en promedio, están las predicciones de los valores reales.</p>
+                            </div>
+                         </div>
+                         <div class="fade-in-up" style="animation-delay: 0.8s;">
+                            <h3 class="title text-3xl mb-4 text-purple-300">Métricas de Clasificación</h3>
+                            <div class="content-box rounded-lg p-6 space-y-4">
+                                <div class="flex items-start gap-4">
+                                    <i class="fas fa-exclamation-triangle text-4xl text-yellow-400 mt-1"></i>
+                                    <div>
+                                        <h4 class="subtitle text-xl text-left">Accuracy (Exactitud)</h4>
+                                        <p class="text-left">Porcentaje de aciertos. ¡Puede ser engañoso con datos desbalanceados!</p>
+                                    </div>
+                                </div>
+                                 <div class="flex items-start gap-4">
+                                    <i class="fas fa-bullseye text-4xl text-green-400 mt-1"></i>
+                                    <div>
+                                        <h4 class="subtitle text-xl text-left">Precisión</h4>
+                                        <p class="text-left">De los que predije como positivos, ¿cuántos lo eran realmente?</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <i class="fas fa-filter text-4xl text-cyan-400 mt-1"></i>
+                                    <div>
+                                        <h4 class="subtitle text-xl text-left">Recall (Sensibilidad)</h4>
+                                        <p class="text-left">De los que eran realmente positivos, ¿a cuántos detecté?</p>
+                                    </div>
+                                </div>
+                            </div>
+                         </div>
+                    </div>
+                    <div class="mt-12 content-box p-6 rounded-xl fade-in-up" style="animation-delay: 1.2s;">
+                        <h3 class="title text-3xl text-cyan-300">Validación Cruzada (Cross-Validation)</h3>
+                        <p class="mt-3 text-xl">La técnica estándar para obtener una estimación robusta del rendimiento del modelo en datos nuevos, evitando hacer "trampa" al evaluar con los datos de entrenamiento.</p>
+                    </div>
+                </div>
+                <div class="footer-note">5 / 6<br>Métricas y Validación</div>
+            </div>
+
+            <!-- ===== DIAPOSITIVA 6: El Equilibrio: Overfitting vs Generalización ===== -->
+            <div class="slide">
+                <div class="stars"></div>
+                <div class="text-center w-full max-w-7xl">
+                    <h1 class="title text-5xl mb-12 fade-in-up">El Concepto Clave: La Lucha Contra el Overfitting</h1>
+                    <div class="grid grid-cols-3 gap-8">
+                        <!-- Underfitting -->
+                        <div class="content-box rounded-xl p-6 text-center pop-in" style="animation-delay: 0.5s;">
+                            <h3 class="subtitle text-2xl text-red-400">Underfitting (Subajuste)</h3>
+                             <p class="text-gray-300 mt-2">El modelo es demasiado simple. No captura la tendencia de los datos.</p>
+                             <i class="fas fa-chart-line text-6xl mt-4 text-red-400"></i>
+                        </div>
+                        <!-- Good Fit -->
+                         <div class="content-box rounded-xl p-6 text-center border-2 border-green-400 pop-in" style="animation-delay: 0.8s;">
+                            <h3 class="subtitle text-2xl text-green-400">Buen Ajuste (Generalización)</h3>
+                             <p class="text-gray-300 mt-2">El modelo aprende la tendencia general y funciona bien en datos nuevos.</p>
+                             <i class="fas fa-wave-square text-6xl mt-4 text-green-400"></i>
+                        </div>
+                        <!-- Overfitting -->
+                         <div class="content-box rounded-xl p-6 text-center pop-in" style="animation-delay: 1.1s;">
+                            <h3 class="subtitle text-2xl text-yellow-400">Overfitting (Sobreajuste)</h3>
+                             <p class="text-gray-300 mt-2">El modelo es demasiado complejo. Se "memoriza" el ruido de los datos.</p>
+                             <i class="fas fa-chart-area text-6xl mt-4 text-yellow-400"></i>
+                        </div>
+                    </div>
+                    <div class="fade-in mt-16 max-w-4xl mx-auto" style="animation-delay: 1.6s;">
+                        <i class="fas fa-balance-scale text-8xl text-cyan-300"></i>
+                         <h2 class="title text-4xl mt-4 text-white">NUESTRO OBJETIVO: EL EQUILIBRIO</h2>
+                         <p class="mt-4 text-2xl">Encontrar un modelo que generalice bien, capturando la señal subyacente de los datos sin dejarse engañar por el ruido. Aquí reside la verdadera maestría.</p>
+                    </div>
+                </div>
+                <div class="footer-note">6 / 6<br>Overfitting y Generalización</div>
+            </div>
+
+        </div>
+
+        <div id="script-panel">
+            <!-- El guion se cargará aquí -->
+        </div>
+    </div>
+
+    <!-- ===== CONTROLES DE NAVEGACIÓN Y AUDIO ===== -->
+    <div id="navigation-controls">
+        <button id="prev-btn" title="Anterior"><i class="fas fa-arrow-left"></i></button>
+        <span id="slide-counter">1 / 6</span>
+        <button id="next-btn" title="Siguiente"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    <audio id="audio-player" controls>
+        <source src="2.wav" type="audio/wav">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const counterElement = document.getElementById('slide-counter');
+            const scriptPanel = document.getElementById('script-panel');
+            let currentSlide = 0;
+
+            const scriptsBySlide = [
+                {
+                    "title": "DIAPOSITIVA 1: Los Tres Paradigmas del ML",
+                    "script": "El primer y más común enfoque es el Aprendizaje Supervisado. Aquí, actuamos como un profesor. Le damos al programa miles de imágenes y, para cada una, le proporcionamos la respuesta correcta, la 'etiqueta'. Le decimos: 'esto es un gato', 'esto no es un gato'. El modelo aprende comparando sus predicciones con las respuestas correctas, ajustando sus parámetros para reducir el error... El segundo enfoque es el Aprendizaje No Supervisado. Aquí, no hay profesor. Le damos al programa el mismo montón de imágenes, pero sin ninguna etiqueta. Su tarea es encontrar patrones, estructuras, grupos por sí mismo. Quizás no sepa que un grupo es 'gatos', pero será capaz de agrupar todas las fotos de gatos juntas basándose en similitudes visuales... Finalmente, tenemos el Aprendizaje por Refuerzo. Este es el paradigma del ensayo y el error. Piensen en entrenar a un perro. Cuando lo hace bien, le das un premio (refuerzo positivo). Si queremos que una IA aprenda a jugar a un videojuego, la dejamos jugar. Cada vez que consiga puntos, le daremos una recompensa, y con el tiempo, aprenderá las estrategias para ganar."
+                },
+                {
+                    "title": "DIAPOSITIVA 2: Profundizando en el Aprendizaje Supervisado",
+                    "script": "Profundicemos en el Aprendizaje Supervisado, que es el caballo de batalla de la industria. Se divide principalmente en dos tipos de tareas... La primera es la Regresión. El objetivo aquí es predecir un valor numérico continuo. Por ejemplo, predecir el precio de una acción, la temperatura de mañana o el consumo de combustible de un coche. Los algoritmos intentan dibujar una línea o una curva que se ajuste lo mejor posible a los datos... La segunda tarea es la Clasificación. Aquí el objetivo no es predecir un número, sino una categoría. ¿Este correo electrónico es spam o no es spam? ¿Esta transacción bancaria es fraudulenta o legítima? ¿Esta célula es benigna o maligna?"
+                },
+                {
+                    "title": "DIAPOSITIVA 3: El Arsenal de Clasificación",
+                    "script": "Para la Clasificación usamos algoritmos como la Regresión Logística. También tenemos las Máquinas de Vectores de Soporte (SVM), que intentan encontrar la 'calle' más ancha posible para separar las categorías... Y luego están los Árboles de Decisión, que aprenden una serie de reglas de 'si esto, entonces aquello', muy fáciles de interpretar... Una versión avanzada y muy potente de esto es el Random Forest, que es un ejemplo de 'ensemble learning'. La idea del ensemble es la sabiduría de la multitud: en lugar de confiar en un solo árbol, construimos un 'bosque' de cientos de ellos, y la predicción final se basa en la votación mayoritaria. Esto hace que el modelo sea mucho más robusto."
+                },
+                {
+                    "title": "DIAPOSITIVA 4: El Mundo del Aprendizaje No Supervisado",
+                    "script": "Ahora pasemos al mundo del Aprendizaje No Supervisado, donde no hay respuestas correctas. La tarea más común aquí es el Clustering o agrupamiento. Su objetivo es simple: encontrar grupos de datos similares entre sí. Un uso clásico es la segmentación de clientes, agrupándolos en perfiles sin saber de antemano qué perfiles existen. El método más famoso es K-Means... Otra tarea fundamental es la Reducción de Dimensionalidad. Muchos conjuntos de datos son increíblemente complejos, con miles de características. Esta técnica busca simplificar los datos, proyectándolos a un espacio más pequeño pero conservando la mayor cantidad de información. Piensen en la sombra de un objeto 3D en una pared: es una representación 2D que aún nos da una idea clara de la forma. Eso es lo que hace el Análisis de Componentes Principales o PCA."
+                },
+                {
+                    "title": "DIAPOSITIVA 5: Evaluación y Validación de Modelos",
+                    "script": "Construir un modelo es la mitad del trabajo. La otra mitad es probar, de forma honesta y rigurosa, que realmente funciona. Para ello, necesitamos métricas. En regresión, usamos el Error Cuadrático Medio (RMSE) para medir qué tan lejos están nuestras predicciones... En clasificación, la exactitud o 'Accuracy' puede ser engañosa. Imaginen un modelo para una enfermedad rara que afecta al 1% de la población. Un modelo que siempre diga 'no hay enfermedad' tendría un 99% de accuracy, pero sería inútil. Por eso usamos métricas como la Precisión y el Recall... Pero medir el rendimiento en los mismos datos que usamos para entrenar es hacer trampa. Por eso usamos técnicas como la Validación Cruzada (Cross-Validation), que nos da una estimación mucho más fiable de cómo se comportará nuestro modelo con datos que nunca ha visto."
+                },
+                {
+                    "title": "DIAPOSITIVA 6: El Concepto Clave: Overfitting",
+                    "script": "Todo este proceso de validación tiene un enemigo principal: el sobreajuste u Overfitting. Este es, quizás, el concepto más importante. Un modelo subajustado (Underfitting) es demasiado simple, no ha captado la tendencia... Pero el peligro contrario es el sobreajuste. Un modelo sobreajustado es demasiado complejo. En lugar de aprender la tendencia general, se ha 'memorizado' los datos de entrenamiento, incluyendo el ruido. Este modelo tendrá un rendimiento espectacular en los datos de entrenamiento, pero será un desastre cuando se enfrente a datos nuevos... Nuestro objetivo como ingenieros es encontrar el equilibrio perfecto, un modelo que generalice bien, que capture la señal subyacente de los datos sin dejarse engañar por el ruido. Y es en esta búsqueda del equilibrio donde reside la verdadera maestría del Machine Learning."
+                }
+            ];
+
+            function showSlide(index) {
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.remove('active');
+                }
+                currentSlide = index;
+                if (slides[currentSlide]) {
+                    slides[currentSlide].classList.add('active');
+                }
+                counterElement.textContent = `${currentSlide + 1} / ${slides.length}`;
+                prevBtn.disabled = (currentSlide === 0);
+                nextBtn.disabled = (currentSlide === slides.length - 1);
+                
+                if (scriptPanel && scriptsBySlide[index]) {
+                    const { title, script } = scriptsBySlide[index];
+                    const scriptParagraphs = script.split('...').map(p => p.replace(/\n/g, ' ').trim()).filter(Boolean);
+                    
+                    let htmlContent = `<h2>${title}</h2>`;
+                    htmlContent += `<h3>Guion</h3>`;
+                    scriptParagraphs.forEach(p => {
+                        htmlContent += `<p>${p}</p>`;
+                    });
+
+                    scriptPanel.innerHTML = htmlContent;
+                }
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' && !nextBtn.disabled) {
+                    nextBtn.click();
+                } else if (e.key === 'ArrowLeft' && !prevBtn.disabled) {
+                    prevBtn.click();
+                }
+            });
+
+            showSlide(0);
+        });
+    </script>
+</body>
+</html>
