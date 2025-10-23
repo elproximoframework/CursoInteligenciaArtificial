@@ -1,13 +1,10 @@
-Claro, aquí tienes el informe técnico sin las citaciones.
+
 <br>
 <center>
 # **Informe Técnico: Introducción a la Inteligencia Artificial**
 </center>
 <br>
 
-**Fecha:** 21 de octubre de 2025
-
-**Autor:** Gemini
 
 **Resumen ejecutivo:** El presente informe ofrece un análisis detallado sobre el campo de la Inteligencia Artificial (IA), abarcando desde sus conceptos fundamentales hasta las tendencias que definirán su futuro. Se exploran las definiciones clave, se establecen las diferencias entre disciplinas interrelacionadas como el Machine Learning y el Deep Learning, se recorre su evolución histórica y se examinan los tipos de IA que existen. El objetivo es proporcionar una comprensión integral de esta tecnología transformadora y su impacto en la sociedad.
 
